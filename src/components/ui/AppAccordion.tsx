@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 
 interface AccordionItem {
 	key: string;
-	title: string;
+	title: ReactNode;
 	content: ReactNode;
 	subtitle?: string;
 }

@@ -1,5 +1,18 @@
-import { LayoutDashboard, type LucideIcon, Settings, ShieldCheck, UserCircle, Users } from "lucide-react";
-import type { UserRole } from "@/utils/config";
+import {
+	AlertTriangle,
+	Bell,
+	Boxes,
+	ChefHat,
+	Clock,
+	Factory,
+	FileBarChart,
+	LayoutDashboard,
+	type LucideIcon,
+	ScrollText,
+	Settings,
+	TrendingDown,
+} from "lucide-react";
+import type { UserRole } from "@/types/user";
 
 // --- Types ---
 
@@ -10,59 +23,95 @@ export interface NavItem {
 	icon: LucideIcon;
 	roles: UserRole[]; // which roles can see this item
 	exact?: boolean; // match href exactly for active state (default: false)
-	children?: NavItem[]; // submenu items — inherit parent roles if not specified
+	children?: NavItem[]; // submenu items
 }
 
 // --- Navigation items ---
-// roles: list every role that can see this item.
-// Different roles can share the same href — just include all of them in roles[].
-// For submenu items, roles are checked independently per child.
+// Each role gets its own section. More items are added in later MVPs
+// (inventory, recipes, expiry, reports, settings, profile).
 
 export const navigationItems: NavItem[] = [
 	{
-		href: "/dashboard",
+		href: "/admin",
 		title: "Dashboard",
 		description: "Overview and summary",
 		icon: LayoutDashboard,
-		roles: ["ADMIN", "USER"],
+		roles: ["admin"],
 		exact: true,
 	},
 	{
-		href: "/dashboard/admin",
-		title: "Admin",
-		description: "Admin controls and settings",
-		icon: ShieldCheck,
-		roles: ["ADMIN"],
-		children: [
-			{
-				href: "/dashboard/admin/users",
-				title: "Users",
-				description: "Manage user accounts",
-				icon: Users,
-				roles: ["ADMIN"],
-			},
-			{
-				href: "/dashboard/admin/settings",
-				title: "Settings",
-				description: "App-wide configuration",
-				icon: Settings,
-				roles: ["ADMIN"],
-			},
-		],
+		href: "/admin/inventory",
+		title: "Inventory",
+		description: "Products and stock batches",
+		icon: Boxes,
+		roles: ["admin"],
 	},
 	{
-		href: "/profile",
-		title: "Profile",
-		description: "Your account and preferences",
-		icon: UserCircle,
-		roles: ["ADMIN", "USER"],
+		href: "/admin/recipes",
+		title: "Recipes",
+		description: "Recipes and availability",
+		icon: ChefHat,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/production",
+		title: "Production",
+		description: "What staff prepared",
+		icon: Factory,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/forecast",
+		title: "Forecast",
+		description: "Days of stock left per ingredient",
+		icon: TrendingDown,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/expiry",
+		title: "Expiry Tracker",
+		description: "Batches by expiry",
+		icon: Clock,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/alerts",
+		title: "Alerts",
+		description: "Stock & expiry alerts",
+		icon: AlertTriangle,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/notifications",
+		title: "Notifications",
+		description: "System notifications",
+		icon: Bell,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/reports",
+		title: "Reports",
+		description: "Restock, cook, production, expiry",
+		icon: FileBarChart,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/audit-logs",
+		title: "Audit Logs",
+		description: "System activity trail",
+		icon: ScrollText,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/settings",
+		title: "Settings",
+		description: "Config, users, permissions",
+		icon: Settings,
+		roles: ["admin"],
 	},
 ];
 
 // --- Helper: filter items by role ---
-// Pass the current user's role to get their visible menu.
-// Recursively filters children too — a child hidden from a role
-// will not appear even if the parent is visible.
 
 export const getNavigation = (role: UserRole): NavItem[] => {
 	const filterItems = (items: NavItem[]): NavItem[] =>
@@ -77,12 +126,14 @@ export const getNavigation = (role: UserRole): NavItem[] => {
 };
 
 /**
- * Get the default route for a user role after successful login
+ * Default landing route per role after a successful login.
  */
 export const getDefaultRoute = (role: UserRole): string => {
+	// Staff have no web area - they belong on the mobile app. Send them to sign-in
+	// (defensive; staff are already rejected at login).
 	const defaultRoutes: Record<UserRole, string> = {
-		ADMIN: "/dashboard/admin",
-		USER: "/dashboard",
+		admin: "/admin",
+		staff: "/sign-in",
 	};
 	return defaultRoutes[role];
 };

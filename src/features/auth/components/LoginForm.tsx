@@ -1,29 +1,29 @@
-import { Button, FieldError, Input, Label, TextField } from "@heroui/react";
+import { Button } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useLogin } from "../hooks/use-auth-mutations";
+import { AppInputGroup } from "@/components/form/AppInputGroup";
+import { AppTextField } from "@/components/form/AppTextField";
+import { useLogin } from "../hooks/use-firebase-auth";
 import { type LoginInput, LoginSchema } from "../validations/schema/login.schema";
 
 export default function LoginForm() {
 	const [showPassword, setShowPassword] = useState(false);
-	const loginMutation = useLogin();
+	const { login, isPending } = useLogin();
 
-	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<LoginInput>({
+	const { control, handleSubmit } = useForm<LoginInput>({
 		resolver: zodResolver(LoginSchema),
+		mode: "onBlur",
+		reValidateMode: "onChange",
 		defaultValues: {
-			identifier: "",
+			email: "",
 			password: "",
 		},
 	});
 
 	const onSubmit = (data: LoginInput) => {
-		loginMutation.mutate(data);
+		void login(data.email, data.password);
 	};
 
 	return (
@@ -31,27 +31,21 @@ export default function LoginForm() {
 			className="space-y-6"
 			onSubmit={handleSubmit(onSubmit)}
 		>
-			<TextField isInvalid={!!errors.identifier}>
-				<Label className="text-foreground font-semibold">Email or Phone</Label>
-				<Input
-					className="rounded-lg border border-app-brand/20 bg-app-base px-3 py-3 focus:border-app-brand outline-none transition-colors w-full"
-					placeholder="Enter your email or phone"
-					{...register("identifier")}
-				/>
-				<FieldError className="text-danger text-xs mt-1">{errors.identifier?.message}</FieldError>
-			</TextField>
+			<AppTextField
+				control={control}
+				isRequired
+				label="Email"
+				name="email"
+				placeholder="Enter your email"
+				type="email"
+			/>
 
-			<TextField isInvalid={!!errors.password}>
-				<Label className="text-foreground font-semibold">Password</Label>
-				<div className="relative">
-					<Input
-						className="rounded-lg border border-app-brand/20 bg-app-base px-3 py-3 focus:border-app-brand outline-none transition-colors w-full pr-10"
-						placeholder="Enter your password"
-						type={showPassword ? "text" : "password"}
-						{...register("password")}
-					/>
+			<AppInputGroup
+				control={control}
+				endContent={
 					<button
-						className="absolute right-3 top-1/2 -translate-y-1/2 focus:outline-none"
+						aria-label={showPassword ? "Hide password" : "Show password"}
+						className="focus:outline-none"
 						onClick={() => setShowPassword(!showPassword)}
 						type="button"
 					>
@@ -67,22 +61,17 @@ export default function LoginForm() {
 							/>
 						)}
 					</button>
-				</div>
-				<FieldError className="text-danger text-xs mt-1">{errors.password?.message}</FieldError>
-			</TextField>
-
-			<div className="flex justify-end">
-				<button
-					className="text-xs font-semibold text-app-brand hover:underline cursor-pointer"
-					type="button"
-				>
-					Forgot password?
-				</button>
-			</div>
+				}
+				isRequired
+				label="Password"
+				name="password"
+				placeholder="Enter your password"
+				type={showPassword ? "text" : "password"}
+			/>
 
 			<Button
 				className="w-full bg-app-brand text-app-base font-bold h-12 rounded-xl transition-all hover:brightness-110 active:scale-[0.98]"
-				isPending={loginMutation.isPending}
+				isPending={isPending}
 				type="submit"
 			>
 				<LogIn

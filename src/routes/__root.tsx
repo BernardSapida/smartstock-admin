@@ -5,6 +5,7 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { seo } from "@/config/seo.config";
 
+import { AuthProvider } from "@/features/auth/context/AuthProvider";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import TanStackQueryProvider from "../integrations/tanstack-query/root-provider";
 import appCss from "../styles.css?url";
@@ -13,24 +14,15 @@ interface MyRouterContext {
 	queryClient: QueryClient;
 }
 
+// Dark mode ONLY. The app is always dark regardless of OS/browser preference.
 const THEME_INIT_SCRIPT = `
 (function() {
   try {
-    var storage = window.localStorage.getItem('app-ui-storage');
-    var mode = 'auto';
-    if (storage) {
-      var parsed = JSON.parse(storage);
-      if (parsed && parsed.state && parsed.state.themeMode) {
-        mode = parsed.state.themeMode;
-      }
-    }
-    var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var resolved = mode === 'auto' ? (prefersDark ? 'dark' : 'light') : mode;
     var root = document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(resolved);
-    root.setAttribute('data-theme', mode);
-    root.style.colorScheme = resolved;
+    root.classList.remove('light');
+    root.classList.add('dark');
+    root.setAttribute('data-theme', 'dark');
+    root.style.colorScheme = 'dark';
   } catch (e) {}
 })();
 `;
@@ -71,20 +63,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)] bg-background text-foreground min-h-screen">
 				<TanStackQueryProvider>
-					<Toast.Provider placement="bottom end" />
-					{children}
-					<TanStackDevtools
-						config={{
-							position: "bottom-right",
-						}}
-						plugins={[
-							{
-								name: "Tanstack Router",
-								render: <TanStackRouterDevtoolsPanel />,
-							},
-							TanStackQueryDevtools,
-						]}
-					/>
+					<AuthProvider>
+						<Toast.Provider placement="bottom end" />
+						{children}
+						<TanStackDevtools
+							config={{
+								position: "bottom-right",
+							}}
+							plugins={[
+								{
+									name: "Tanstack Router",
+									render: <TanStackRouterDevtoolsPanel />,
+								},
+								TanStackQueryDevtools,
+							]}
+						/>
+					</AuthProvider>
 				</TanStackQueryProvider>
 				<Scripts />
 			</body>

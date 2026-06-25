@@ -1,4 +1,4 @@
-import { toast } from "@heroui/react";
+import { notify } from "@/components/feedback";
 import { logApiError } from "./logger";
 
 /**
@@ -24,7 +24,8 @@ export const handleApiError = (error: any, endpoint: string, status: number): vo
 	const userMessage = errorMessages[status] || error?.message || "Something went wrong";
 
 	// Show toast notification for user feedback
-	toast.danger("Error", {
+	notify.danger({
+		title: "Error",
 		description: userMessage,
 	});
 };

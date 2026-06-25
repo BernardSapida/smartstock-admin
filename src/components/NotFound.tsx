@@ -11,8 +11,8 @@ export function NotFound() {
 			</div>
 
 			<div className="rise-in flex flex-col items-center max-w-lg mb-24">
-				<h1 className="text-[12rem] font-serif font-black text-app-brand/10 leading-none select-none">404</h1>
-				<h2 className="text-5xl font-serif font-bold text-text-primary -mt-8 mb-6 tracking-tight">Lost at Sea?</h2>
+				<h1 className="text-[12rem] font-black text-app-brand/10 leading-none select-none">404</h1>
+				<h2 className="text-5xl font-bold text-text-primary -mt-8 mb-6 tracking-tight">Lost at Sea?</h2>
 
 				<p className="text-lg text-text-secondary font-medium leading-relaxed mb-12 max-w-sm">
 					We couldn't find the page you're searching for. It might have drifted away or never existed in these waters.

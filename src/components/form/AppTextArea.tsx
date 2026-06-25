@@ -11,6 +11,7 @@ interface AppTextAreaProps<T extends FieldValues> {
 	isDisabled?: boolean;
 	isReadOnly?: boolean;
 	isRequired?: boolean;
+	rows?: number;
 	className?: string;
 	"data-cy"?: string;
 }
@@ -24,6 +25,7 @@ export function AppTextArea<T extends FieldValues>({
 	isDisabled,
 	isReadOnly,
 	isRequired,
+	rows,
 	className,
 	"data-cy": dataCy,
 }: AppTextAreaProps<T>) {
@@ -47,8 +49,14 @@ export function AppTextArea<T extends FieldValues>({
 			value={field.value ?? ""}
 		>
 			<Label>{label}</Label>
-			<InputGroup fullWidth>
-				<InputGroup.TextArea placeholder={placeholder} />
+			<InputGroup
+				fullWidth
+				variant="secondary"
+			>
+				<InputGroup.TextArea
+					placeholder={placeholder}
+					rows={rows}
+				/>
 			</InputGroup>
 			{description && <Description>{description}</Description>}
 			<FieldError>{error?.message}</FieldError>

@@ -1,4 +1,4 @@
-import { Calendar, DateField, DatePicker, FieldError, Label } from "@heroui/react";
+import { Calendar, DateField, DatePicker, Description, FieldError, Label } from "@heroui/react";
 import type { CalendarDate } from "@internationalized/date";
 import type { Control, FieldValues, Path } from "react-hook-form";
 import { useController } from "react-hook-form";
@@ -9,6 +9,7 @@ interface AppDatePickerProps<T extends FieldValues> {
 	control: Control<T>;
 	minValue?: CalendarDate;
 	maxValue?: CalendarDate;
+	description?: string;
 	isDisabled?: boolean;
 	isRequired?: boolean;
 	className?: string;
@@ -21,6 +22,7 @@ export function AppDatePicker<T extends FieldValues>({
 	control,
 	minValue,
 	maxValue,
+	description,
 	isDisabled,
 	isRequired,
 	className,
@@ -48,7 +50,10 @@ export function AppDatePicker<T extends FieldValues>({
 			value={field.value ?? null}
 		>
 			<Label>{label}</Label>
-			<DateField.Group fullWidth>
+			<DateField.Group
+				fullWidth
+				variant="secondary"
+			>
 				<DateField.Input>{(segment) => <DateField.Segment segment={segment} />}</DateField.Input>
 				<DateField.Suffix>
 					<DatePicker.Trigger>
@@ -72,6 +77,7 @@ export function AppDatePicker<T extends FieldValues>({
 					</Calendar.Grid>
 				</Calendar>
 			</DatePicker.Popover>
+			{description && <Description>{description}</Description>}
 			<FieldError>{error?.message}</FieldError>
 		</DatePicker>
 	);

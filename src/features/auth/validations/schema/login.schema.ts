@@ -2,7 +2,7 @@ import { z } from "zod";
 import { authRules } from "../rules/auth";
 
 export const LoginSchema = z.object({
-	identifier: authRules.email.or(authRules.phoneNumber),
+	email: authRules.email,
 	password: authRules.loginPassword,
 });
 

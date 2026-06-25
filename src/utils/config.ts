@@ -1,9 +1,9 @@
 import { env } from "@/env";
 
-export type UserRole = keyof typeof USER_ROLES;
+export type { UserRole } from "@/types/user";
 
 export const APP_CONFIG = {
-	APP_NAME: "REST Template",
+	APP_NAME: "Smartstock",
 	API_BASE_URL: env.VITE_SERVER_URL,
 	AUTH: {
 		REFRESH_MINUTES_BEFORE_EXPIRATION: 2 * 60 * 1000, // 2 minutes
@@ -26,6 +26,6 @@ export const APP_CONFIG = {
 } as const;
 
 export const USER_ROLES = {
-	ADMIN: "ADMIN",
-	USER: "USER",
+	ADMIN: "admin",
+	STAFF: "staff",
 } as const;

@@ -8,22 +8,41 @@ interface AppPaginationProps {
 	className?: string;
 }
 
-export function AppPagination({ page, total, onPageChange, rowsPerPage = 10, className }: AppPaginationProps) {
+export function AppPagination({
+	page,
+	total,
+	onPageChange,
+	rowsPerPage = 10,
+	className,
+}: AppPaginationProps) {
+	if (total === 0) return null;
+
 	const totalPages = Math.ceil(total / rowsPerPage);
-
-	if (total <= rowsPerPage) return null;
-
-	const from = (page - 1) * rowsPerPage + 1;
+	const from = Math.min((page - 1) * rowsPerPage + 1, total);
 	const to = Math.min(page * rowsPerPage, total);
 
-	const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+	const getPageNumbers = (): (number | "ellipsis")[] => {
+		const pages: (number | "ellipsis")[] = [1];
+
+		if (page > 3) pages.push("ellipsis");
+
+		const start = Math.max(2, page - 1);
+		const end = Math.min(totalPages - 1, page + 1);
+		for (let i = start; i <= end; i++) pages.push(i);
+
+		if (page < totalPages - 2) pages.push("ellipsis");
+
+		pages.push(totalPages);
+
+		return pages;
+	};
 
 	return (
-		<div className={className ?? "flex flex-col sm:flex-row items-center justify-between gap-3 pt-4"}>
-			<span className="text-sm text-muted">
-				Showing {from}–{to} of {total}
-			</span>
-			<Pagination className="justify-center">
+		<Pagination className={className ?? "w-full pt-4"}>
+			<Pagination.Summary>
+				Showing {from}-{to} of {total} results
+			</Pagination.Summary>
+			{totalPages > 1 && (
 				<Pagination.Content>
 					<Pagination.Item>
 						<Pagination.Previous
@@ -34,16 +53,22 @@ export function AppPagination({ page, total, onPageChange, rowsPerPage = 10, cla
 							<span>Previous</span>
 						</Pagination.Previous>
 					</Pagination.Item>
-					{pageNumbers.map((p) => (
-						<Pagination.Item key={p}>
-							<Pagination.Link
-								isActive={p === page}
-								onPress={() => onPageChange(p)}
-							>
-								{p}
-							</Pagination.Link>
-						</Pagination.Item>
-					))}
+					{getPageNumbers().map((p, i) =>
+						p === "ellipsis" ? (
+							<Pagination.Item key={`ellipsis-${i}`}>
+								<Pagination.Ellipsis />
+							</Pagination.Item>
+						) : (
+							<Pagination.Item key={p}>
+								<Pagination.Link
+									isActive={p === page}
+									onPress={() => onPageChange(p)}
+								>
+									{p}
+								</Pagination.Link>
+							</Pagination.Item>
+						),
+					)}
 					<Pagination.Item>
 						<Pagination.Next
 							isDisabled={page === totalPages}
@@ -54,7 +79,7 @@ export function AppPagination({ page, total, onPageChange, rowsPerPage = 10, cla
 						</Pagination.Next>
 					</Pagination.Item>
 				</Pagination.Content>
-			</Pagination>
-		</div>
+			)}
+		</Pagination>
 	);
 }

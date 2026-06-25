@@ -66,17 +66,19 @@ export function DataTableCard<T extends { id: string | number }>({
 				placeholder="Search..."
 				value={search}
 			/>
-			<AppTable
-				columns={columns}
-				isLoading={isLoading}
-				onRowAction={onRowAction}
-				rows={rows}
-			/>
-			<AppPagination
-				onPageChange={setPage}
-				page={page}
-				total={total}
-			/>
+			<div>
+				<AppTable
+					columns={columns}
+					isLoading={isLoading}
+					onRowAction={onRowAction}
+					rows={rows}
+				/>
+				<AppPagination
+					onPageChange={setPage}
+					page={page}
+					total={total}
+				/>
+			</div>
 		</div>
 	);
 }

@@ -49,7 +49,7 @@ export function AppDateField<T extends FieldValues>({
 			value={field.value ?? null}
 		>
 			<Label>{label}</Label>
-			<DateField.Group>
+			<DateField.Group variant="secondary">
 				<DateField.Input>{(segment) => <DateField.Segment segment={segment} />}</DateField.Input>
 			</DateField.Group>
 			{description && <Description>{description}</Description>}

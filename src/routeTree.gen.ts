@@ -17,6 +17,22 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
+import { Route as AuthenticatedAdminRecipesRouteImport } from './routes/_authenticated/admin/recipes'
+import { Route as AuthenticatedAdminProductionRouteImport } from './routes/_authenticated/admin/production'
+import { Route as AuthenticatedAdminNotificationsRouteImport } from './routes/_authenticated/admin/notifications'
+import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
+import { Route as AuthenticatedAdminForecastRouteImport } from './routes/_authenticated/admin/forecast'
+import { Route as AuthenticatedAdminExpiryRouteImport } from './routes/_authenticated/admin/expiry'
+import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authenticated/admin/audit-logs'
+import { Route as AuthenticatedAdminAlertsRouteImport } from './routes/_authenticated/admin/alerts'
+import { Route as AuthenticatedAdminRecipesAddRouteImport } from './routes/_authenticated/admin/recipes_.add'
+import { Route as AuthenticatedAdminInventoryAddRouteImport } from './routes/_authenticated/admin/inventory_.add'
+import { Route as AuthenticatedAdminRecipesRecipeIdEditRouteImport } from './routes/_authenticated/admin/recipes_.$recipeId.edit'
+import { Route as AuthenticatedAdminInventoryProductIdEditRouteImport } from './routes/_authenticated/admin/inventory_.$productId.edit'
 
 const UnauthorizedRoute = UnauthorizedRouteImport.update({
   id: '/unauthorized',
@@ -57,6 +73,100 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRecipesRoute =
+  AuthenticatedAdminRecipesRouteImport.update({
+    id: '/recipes',
+    path: '/recipes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminProductionRoute =
+  AuthenticatedAdminProductionRouteImport.update({
+    id: '/production',
+    path: '/production',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminNotificationsRoute =
+  AuthenticatedAdminNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminInventoryRoute =
+  AuthenticatedAdminInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminForecastRoute =
+  AuthenticatedAdminForecastRouteImport.update({
+    id: '/forecast',
+    path: '/forecast',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminExpiryRoute =
+  AuthenticatedAdminExpiryRouteImport.update({
+    id: '/expiry',
+    path: '/expiry',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAuditLogsRoute =
+  AuthenticatedAdminAuditLogsRouteImport.update({
+    id: '/audit-logs',
+    path: '/audit-logs',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAlertsRoute =
+  AuthenticatedAdminAlertsRouteImport.update({
+    id: '/alerts',
+    path: '/alerts',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRecipesAddRoute =
+  AuthenticatedAdminRecipesAddRouteImport.update({
+    id: '/recipes_/add',
+    path: '/recipes/add',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminInventoryAddRoute =
+  AuthenticatedAdminInventoryAddRouteImport.update({
+    id: '/inventory_/add',
+    path: '/inventory/add',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRecipesRecipeIdEditRoute =
+  AuthenticatedAdminRecipesRecipeIdEditRouteImport.update({
+    id: '/recipes_/$recipeId/edit',
+    path: '/recipes/$recipeId/edit',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminInventoryProductIdEditRoute =
+  AuthenticatedAdminInventoryProductIdEditRouteImport.update({
+    id: '/inventory_/$productId/edit',
+    path: '/inventory/$productId/edit',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -64,8 +174,24 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/alerts': typeof AuthenticatedAdminAlertsRoute
+  '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
+  '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
+  '/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
+  '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
+  '/admin/production': typeof AuthenticatedAdminProductionRoute
+  '/admin/recipes': typeof AuthenticatedAdminRecipesRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/inventory/add': typeof AuthenticatedAdminInventoryAddRoute
+  '/admin/recipes/add': typeof AuthenticatedAdminRecipesAddRoute
+  '/admin/inventory/$productId/edit': typeof AuthenticatedAdminInventoryProductIdEditRoute
+  '/admin/recipes/$recipeId/edit': typeof AuthenticatedAdminRecipesRecipeIdEditRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +201,21 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/alerts': typeof AuthenticatedAdminAlertsRoute
+  '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
+  '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
+  '/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
+  '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
+  '/admin/production': typeof AuthenticatedAdminProductionRoute
+  '/admin/recipes': typeof AuthenticatedAdminRecipesRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/inventory/add': typeof AuthenticatedAdminInventoryAddRoute
+  '/admin/recipes/add': typeof AuthenticatedAdminRecipesAddRoute
+  '/admin/inventory/$productId/edit': typeof AuthenticatedAdminInventoryProductIdEditRoute
+  '/admin/recipes/$recipeId/edit': typeof AuthenticatedAdminRecipesRecipeIdEditRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -84,8 +225,24 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/admin/alerts': typeof AuthenticatedAdminAlertsRoute
+  '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
+  '/_authenticated/admin/expiry': typeof AuthenticatedAdminExpiryRoute
+  '/_authenticated/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/_authenticated/admin/inventory': typeof AuthenticatedAdminInventoryRoute
+  '/_authenticated/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
+  '/_authenticated/admin/production': typeof AuthenticatedAdminProductionRoute
+  '/_authenticated/admin/recipes': typeof AuthenticatedAdminRecipesRoute
+  '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/inventory_/add': typeof AuthenticatedAdminInventoryAddRoute
+  '/_authenticated/admin/recipes_/add': typeof AuthenticatedAdminRecipesAddRoute
+  '/_authenticated/admin/inventory_/$productId/edit': typeof AuthenticatedAdminInventoryProductIdEditRoute
+  '/_authenticated/admin/recipes_/$recipeId/edit': typeof AuthenticatedAdminRecipesRecipeIdEditRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -95,8 +252,24 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
+    | '/admin'
     | '/dashboard'
     | '/profile'
+    | '/admin/alerts'
+    | '/admin/audit-logs'
+    | '/admin/expiry'
+    | '/admin/forecast'
+    | '/admin/inventory'
+    | '/admin/notifications'
+    | '/admin/production'
+    | '/admin/recipes'
+    | '/admin/reports'
+    | '/admin/settings'
+    | '/admin/'
+    | '/admin/inventory/add'
+    | '/admin/recipes/add'
+    | '/admin/inventory/$productId/edit'
+    | '/admin/recipes/$recipeId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +279,21 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/dashboard'
     | '/profile'
+    | '/admin/alerts'
+    | '/admin/audit-logs'
+    | '/admin/expiry'
+    | '/admin/forecast'
+    | '/admin/inventory'
+    | '/admin/notifications'
+    | '/admin/production'
+    | '/admin/recipes'
+    | '/admin/reports'
+    | '/admin/settings'
+    | '/admin'
+    | '/admin/inventory/add'
+    | '/admin/recipes/add'
+    | '/admin/inventory/$productId/edit'
+    | '/admin/recipes/$recipeId/edit'
   id:
     | '__root__'
     | '/'
@@ -114,8 +302,24 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
+    | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
+    | '/_authenticated/admin/alerts'
+    | '/_authenticated/admin/audit-logs'
+    | '/_authenticated/admin/expiry'
+    | '/_authenticated/admin/forecast'
+    | '/_authenticated/admin/inventory'
+    | '/_authenticated/admin/notifications'
+    | '/_authenticated/admin/production'
+    | '/_authenticated/admin/recipes'
+    | '/_authenticated/admin/reports'
+    | '/_authenticated/admin/settings'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/inventory_/add'
+    | '/_authenticated/admin/recipes_/add'
+    | '/_authenticated/admin/inventory_/$productId/edit'
+    | '/_authenticated/admin/recipes_/$recipeId/edit'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -185,15 +389,170 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/recipes': {
+      id: '/_authenticated/admin/recipes'
+      path: '/recipes'
+      fullPath: '/admin/recipes'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/production': {
+      id: '/_authenticated/admin/production'
+      path: '/production'
+      fullPath: '/admin/production'
+      preLoaderRoute: typeof AuthenticatedAdminProductionRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/notifications': {
+      id: '/_authenticated/admin/notifications'
+      path: '/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AuthenticatedAdminNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/inventory': {
+      id: '/_authenticated/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/forecast': {
+      id: '/_authenticated/admin/forecast'
+      path: '/forecast'
+      fullPath: '/admin/forecast'
+      preLoaderRoute: typeof AuthenticatedAdminForecastRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/expiry': {
+      id: '/_authenticated/admin/expiry'
+      path: '/expiry'
+      fullPath: '/admin/expiry'
+      preLoaderRoute: typeof AuthenticatedAdminExpiryRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/audit-logs': {
+      id: '/_authenticated/admin/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/admin/audit-logs'
+      preLoaderRoute: typeof AuthenticatedAdminAuditLogsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/alerts': {
+      id: '/_authenticated/admin/alerts'
+      path: '/alerts'
+      fullPath: '/admin/alerts'
+      preLoaderRoute: typeof AuthenticatedAdminAlertsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/recipes_/add': {
+      id: '/_authenticated/admin/recipes_/add'
+      path: '/recipes/add'
+      fullPath: '/admin/recipes/add'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesAddRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/inventory_/add': {
+      id: '/_authenticated/admin/inventory_/add'
+      path: '/inventory/add'
+      fullPath: '/admin/inventory/add'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryAddRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/recipes_/$recipeId/edit': {
+      id: '/_authenticated/admin/recipes_/$recipeId/edit'
+      path: '/recipes/$recipeId/edit'
+      fullPath: '/admin/recipes/$recipeId/edit'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesRecipeIdEditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/inventory_/$productId/edit': {
+      id: '/_authenticated/admin/inventory_/$productId/edit'
+      path: '/inventory/$productId/edit'
+      fullPath: '/admin/inventory/$productId/edit'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryProductIdEditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminAlertsRoute: typeof AuthenticatedAdminAlertsRoute
+  AuthenticatedAdminAuditLogsRoute: typeof AuthenticatedAdminAuditLogsRoute
+  AuthenticatedAdminExpiryRoute: typeof AuthenticatedAdminExpiryRoute
+  AuthenticatedAdminForecastRoute: typeof AuthenticatedAdminForecastRoute
+  AuthenticatedAdminInventoryRoute: typeof AuthenticatedAdminInventoryRoute
+  AuthenticatedAdminNotificationsRoute: typeof AuthenticatedAdminNotificationsRoute
+  AuthenticatedAdminProductionRoute: typeof AuthenticatedAdminProductionRoute
+  AuthenticatedAdminRecipesRoute: typeof AuthenticatedAdminRecipesRoute
+  AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminInventoryAddRoute: typeof AuthenticatedAdminInventoryAddRoute
+  AuthenticatedAdminRecipesAddRoute: typeof AuthenticatedAdminRecipesAddRoute
+  AuthenticatedAdminInventoryProductIdEditRoute: typeof AuthenticatedAdminInventoryProductIdEditRoute
+  AuthenticatedAdminRecipesRecipeIdEditRoute: typeof AuthenticatedAdminRecipesRecipeIdEditRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminAlertsRoute: AuthenticatedAdminAlertsRoute,
+  AuthenticatedAdminAuditLogsRoute: AuthenticatedAdminAuditLogsRoute,
+  AuthenticatedAdminExpiryRoute: AuthenticatedAdminExpiryRoute,
+  AuthenticatedAdminForecastRoute: AuthenticatedAdminForecastRoute,
+  AuthenticatedAdminInventoryRoute: AuthenticatedAdminInventoryRoute,
+  AuthenticatedAdminNotificationsRoute: AuthenticatedAdminNotificationsRoute,
+  AuthenticatedAdminProductionRoute: AuthenticatedAdminProductionRoute,
+  AuthenticatedAdminRecipesRoute: AuthenticatedAdminRecipesRoute,
+  AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,
+  AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminInventoryAddRoute: AuthenticatedAdminInventoryAddRoute,
+  AuthenticatedAdminRecipesAddRoute: AuthenticatedAdminRecipesAddRoute,
+  AuthenticatedAdminInventoryProductIdEditRoute:
+    AuthenticatedAdminInventoryProductIdEditRoute,
+  AuthenticatedAdminRecipesRecipeIdEditRoute:
+    AuthenticatedAdminRecipesRecipeIdEditRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
+
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }

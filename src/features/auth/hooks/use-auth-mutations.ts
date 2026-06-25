@@ -1,6 +1,6 @@
-import { toast } from "@heroui/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
+import { notify } from "@/components/feedback";
 import { getDefaultRoute } from "@/config/navigation.config";
 import { logClientError } from "@/errors/logger";
 import { loginApi, logoutApi, refreshTokenApi, registerUserApi, requestOTPApi, verifyOTPApi } from "../api/auth.api";
@@ -39,15 +39,17 @@ export const useLogin = () => {
 			navigate({ to: getDefaultRoute(response.user.userType as any) as any });
 
 			// Show success toast
-			toast.success(`Welcome back, ${response.user.firstName} ${response.user.lastName}! 👋`, {
+			notify.success({
+				title: `Welcome back, ${response.user.firstName} ${response.user.lastName}! 👋`,
 				description: "You've successfully signed in to your account",
 			});
 		},
 		onError: (error) => {
 			logClientError(error, "LOGIN_MUTATION");
 
-			toast.danger("Login failed", {
-				description: error.message,
+			notify.danger({
+				title: "Login failed",
+				description: error.message || "Unable to sign in. Please try again.",
 			});
 		},
 	});
@@ -78,7 +80,8 @@ export const useLogout = () => {
 			navigate({ to: "/" });
 
 			// Show success toast
-			toast.success("See you soon! 👋", {
+			notify.success({
+				title: "See you soon! 👋",
 				description: "You've been logged out successfully",
 			});
 		},
@@ -141,14 +144,16 @@ export const useVerifyOTP = () => {
 			navigate({ to: getDefaultRoute(response.user.userType as any) as any });
 
 			// Show success toast
-			toast.success(`Welcome, ${response.user.firstName}! 🎉`, {
+			notify.success({
+				title: `Welcome, ${response.user.firstName}! 🎉`,
 				description: "Your account has been created successfully",
 			});
 		},
 		onError: (error: any) => {
 			logClientError(error, "VERIFY_OTP_MUTATION");
 
-			toast.danger("Verification failed", {
+			notify.danger({
+				title: "Verification failed",
 				description: error.message || "Invalid OTP code",
 			});
 		},
@@ -162,14 +167,16 @@ export const useRequestOTP = () => {
 	return useMutation({
 		mutationFn: (data: IRequestOTPRequest) => requestOTPApi(data),
 		onSuccess: () => {
-			toast.success("Code sent", {
+			notify.success({
+				title: "Code sent",
 				description: "OTP code has been sent",
 			});
 		},
 		onError: (error: any) => {
 			logClientError(error, "REQUEST_OTP_MUTATION");
 
-			toast.danger("Request failed", {
+			notify.danger({
+				title: "Request failed",
 				description: error.message || "Failed to send OTP",
 			});
 		},
@@ -185,7 +192,8 @@ export const useRegisterUser = () => {
 		onError: (error: any) => {
 			logClientError(error, "REGISTER_MUTATION");
 
-			toast.danger("Registration failed", {
+			notify.danger({
+				title: "Registration failed",
 				description: error.message || "Failed to create account",
 			});
 		},

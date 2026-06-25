@@ -50,7 +50,10 @@ export function AppTextField<T extends FieldValues>({
 			value={field.value ?? ""}
 		>
 			<Label>{label}</Label>
-			<Input placeholder={placeholder} />
+			<Input
+				placeholder={placeholder}
+				variant="secondary"
+			/>
 			{description && <Description>{description}</Description>}
 			<FieldError>{error?.message}</FieldError>
 		</TextField>

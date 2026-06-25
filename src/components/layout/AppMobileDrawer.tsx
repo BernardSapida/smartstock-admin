@@ -1,8 +1,9 @@
 import { Button } from "@heroui/react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Layout, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useEffect } from "react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { APP_NAME } from "@/config/seo.config";
 import { useUIStore } from "@/store/ui.store";
 
@@ -10,6 +11,7 @@ interface NavItem {
 	href: string;
 	icon: React.ComponentType<{ className?: string }>;
 	title: string;
+	exact?: boolean;
 }
 
 interface MobileDrawerProps {
@@ -68,9 +70,9 @@ export function AppMobileDrawer({ bottom, navigation }: MobileDrawerProps) {
 								to="/"
 							>
 								<div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-app-brand text-white shadow-lg">
-									<Layout className="h-6 w-6" />
+									<BrandLogo className="h-6 w-6" />
 								</div>
-								<span className="font-serif text-xl font-bold tracking-tight">{APP_NAME}</span>
+								<span className="text-xl font-bold tracking-tight">{APP_NAME}</span>
 							</Link>
 							<Button
 								aria-label="Close menu"
@@ -90,6 +92,7 @@ export function AppMobileDrawer({ bottom, navigation }: MobileDrawerProps) {
 						>
 							{navigation.map((item) => (
 								<Link
+									activeOptions={{ exact: item.exact ?? false }}
 									activeProps={{ className: "bg-app-brand/10 text-app-brand" }}
 									className="flex items-center gap-3 px-4 h-12 rounded-2xl transition-all duration-200 group hover:bg-app-brand/5 font-semibold"
 									key={item.href}

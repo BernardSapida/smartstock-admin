@@ -1,5 +1,5 @@
 /**
- * AppInputGroup — RHF-bound TextField with InputGroup prefix/suffix slots.
+ * AppInputGroup - RHF-bound TextField with InputGroup prefix/suffix slots.
  * Use for inputs that need an icon or text adornment (e.g. URL, currency, search).
  * For a plain text input without adornments, use AppTextField instead.
  */
@@ -20,6 +20,8 @@ interface AppInputGroupProps<T extends FieldValues> {
 	isReadOnly?: boolean;
 	isRequired?: boolean;
 	type?: "email" | "password" | "tel" | "text" | "url";
+	/** When true, strips any non-digit characters as the user types. */
+	onlyDigits?: boolean;
 	className?: string;
 	"data-cy"?: string;
 }
@@ -36,6 +38,7 @@ export function AppInputGroup<T extends FieldValues>({
 	isReadOnly,
 	isRequired,
 	type = "text",
+	onlyDigits,
 	className,
 	"data-cy": dataCy,
 }: AppInputGroupProps<T>) {
@@ -43,6 +46,10 @@ export function AppInputGroup<T extends FieldValues>({
 		field,
 		fieldState: { invalid, error },
 	} = useController({ name, control });
+
+	const handleChange = (value: string) => {
+		field.onChange(onlyDigits ? value.replace(/\D/g, "") : value);
+	};
 
 	return (
 		<TextField
@@ -54,15 +61,16 @@ export function AppInputGroup<T extends FieldValues>({
 			isRequired={isRequired}
 			name={field.name}
 			onBlur={field.onBlur}
-			onChange={field.onChange}
+			onChange={handleChange}
 			type={type}
 			validationBehavior="aria"
 			value={field.value ?? ""}
 		>
 			<Label>{label}</Label>
-			<InputGroup>
+			<InputGroup variant="secondary">
 				{startContent && <InputGroup.Prefix>{startContent}</InputGroup.Prefix>}
 				<InputGroup.Input
+					inputMode={onlyDigits ? "numeric" : undefined}
 					onBlur={field.onBlur}
 					placeholder={placeholder}
 				/>

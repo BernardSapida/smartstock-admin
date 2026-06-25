@@ -1,4 +1,4 @@
-import { FieldError, Label, NumberField } from "@heroui/react";
+import { Description, FieldError, Label, NumberField } from "@heroui/react";
 import type { Control, FieldValues, Path } from "react-hook-form";
 import { useController } from "react-hook-form";
 
@@ -6,6 +6,7 @@ interface AppNumberFieldProps<T extends FieldValues> {
 	name: Path<T>;
 	label: string;
 	control: Control<T>;
+	description?: string;
 	minValue?: number;
 	maxValue?: number;
 	step?: number;
@@ -20,6 +21,7 @@ export function AppNumberField<T extends FieldValues>({
 	name,
 	label,
 	control,
+	description,
 	minValue,
 	maxValue,
 	step,
@@ -46,12 +48,15 @@ export function AppNumberField<T extends FieldValues>({
 			minValue={minValue}
 			onBlur={field.onBlur}
 			onChange={(val) => {
-				field.onChange(Number.isNaN(val) ? null : val);
+				field.onChange(Number.isNaN(val) ? 0 : val);
 			}}
 			step={step}
-			value={field.value ?? undefined}
+			validationBehavior="aria"
+			value={field.value ?? 0}
+			variant="secondary"
 		>
 			<Label>{label}</Label>
+			{description && <Description>{description}</Description>}
 			<NumberField.Group>
 				<NumberField.DecrementButton />
 				<NumberField.Input />

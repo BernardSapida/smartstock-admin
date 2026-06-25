@@ -21,3 +21,4 @@ export { AppToggleButton } from "./AppToggleButton";
 export { AppTooltip } from "./AppTooltip";
 export { AsyncButton } from "./AsyncButton";
 export { StatusChip } from "./StatusChip";
+export { TableFilterBar } from "./TableFilterBar";

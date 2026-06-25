@@ -2,16 +2,55 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/Inter.ttf') format('truetype');
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/Inter.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/Inter.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/Inter.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/inter/Inter.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   /* Fonts */
-  --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "Fraunces", Georgia, serif;
+  --font: "Inter", ui-sans-serif, system-ui, sans-serif;
 
   /* Semantic Colors - Derived from Lagoon/Sea Ink Aesthetic */
   --color-app-base: #fbfff8;
-  --color-app-brand: #4fb8b2;
-  --color-app-secondary: #2f6a4a;
-  --color-app-accent: #328f97;
+  --color-app-brand: #1CB454;
+  --color-app-secondary: #7FC79A;
+  --color-app-accent: #C2FF3D;
 
   /* Neutrals for Text (Sea Ink) */
   --color-text-primary: #173a40;
@@ -34,7 +73,7 @@
 
 :root {
 	/* Page defaults */
-	font-family: var(--font-sans);
+	font-family: var(--font);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	color: var(--color-text-primary);
@@ -57,7 +96,7 @@
 }
 
 .dark {
-	--color-app-base: #0a1418;
+	--color-app-base: #020301;
 	--color-text-primary: #d7ece8;
 	--color-text-secondary: #afcdc8;
 
@@ -81,7 +120,7 @@ h2,
 h3,
 h4,
 .display-title {
-	font-family: var(--font-serif);
+	font-family: var(--font);
 	font-weight: 700;
 	letter-spacing: -0.02em;
 }
@@ -104,6 +143,25 @@ h4,
 .dark .island-shell {
 	background: rgba(16, 30, 34, 0.7);
 	border: 1px solid rgba(141, 229, 219, 0.1);
+}
+
+/* Glass cards - all Surface secondary inside main content */
+main .surface--secondary {
+	background: rgba(251, 255, 248, 0.45);
+	border: 1px solid rgba(23, 58, 64, 0.06);
+	box-shadow:
+		0 4px 20px -2px rgba(23, 58, 64, 0.04),
+		0 10px 30px -4px rgba(23, 58, 64, 0.06);
+	backdrop-filter: blur(16px);
+	-webkit-backdrop-filter: blur(16px);
+}
+
+.dark main .surface--secondary {
+	background: rgba(16, 30, 34, 0.65);
+	border: 1px solid rgba(141, 229, 219, 0.08);
+	box-shadow:
+		0 4px 20px -2px rgba(0, 0, 0, 0.2),
+		0 10px 30px -4px rgba(0, 0, 0, 0.3);
 }
 
 /* Rise-in Animation */

@@ -1,43 +1,46 @@
 import { Button, Surface } from "@heroui/react";
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useNavigate } from "@tanstack/react-router";
 import { Menu } from "lucide-react";
+import { useEffect } from "react";
 import { AppMobileDrawer } from "@/components/layout/AppMobileDrawer";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { CardUser } from "@/components/layout/CardUser";
 import { AppBreadcrumbs } from "@/components/ui/AppBreadcrumbs";
+import { AppSpinner } from "@/components/ui/AppSpinner";
 import { getNavigation } from "@/config/navigation.config";
-import { useLogout } from "@/features/auth/hooks/use-auth-mutations";
-import { useUser } from "@/features/auth/hooks/use-auth-queries";
-import { getAccessToken } from "@/features/auth/utils/token.utils";
+import { useAuth } from "@/features/auth/context/AuthProvider";
+import { useLogout } from "@/features/auth/hooks/use-firebase-auth";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import { useUIStore } from "@/store/ui.store";
-import { USER_ROLES } from "@/utils/config";
 
 export const Route = createFileRoute("/_authenticated")({
-	beforeLoad: async () => {
-		const token = getAccessToken();
-		if (!token) {
-			throw redirect({ to: "/sign-in" });
-		}
-	},
 	component: AppLayout,
 });
 
 function AppLayout() {
-	const { data: user } = useUser();
+	const { profile, loading, isAuthenticated } = useAuth();
+	const navigate = useNavigate();
+	const onLogout = useLogout();
 	const breadcrumbs = useRouteBreadcrumbs();
 	const { toggleSidebar } = useUIStore();
-	const logout = useLogout();
 
-	const role = user?.userType ?? USER_ROLES.USER;
-	const navigation = getNavigation(role);
+	// Client-side guard: Firebase auth state resolves on the client.
+	useEffect(() => {
+		if (!loading && !isAuthenticated) {
+			navigate({ to: "/sign-in" });
+		}
+	}, [loading, isAuthenticated, navigate]);
 
-	const cardUser = {
-		name: user ? `${user.firstName} ${user.lastName}` : "User",
-		email: user?.email ?? "",
-	};
+	if (loading || !profile) {
+		return (
+			<div className="min-h-screen flex items-center justify-center bg-app-base">
+				<AppSpinner />
+			</div>
+		);
+	}
 
-	const onLogout = () => logout.mutate();
+	const navigation = getNavigation(profile.role);
+	const cardUser = { name: profile.fullName || "User", email: profile.email };
 
 	return (
 		<div className="min-h-screen flex bg-app-base antialiased text-left">
@@ -62,7 +65,7 @@ function AppLayout() {
 
 			{/* Main Content */}
 			<div className="flex-1 flex flex-col lg:pl-72 text-left">
-				{/* Top Navbar */}
+				{/* Top Navbar - hamburger opens the mobile drawer (hidden on desktop). */}
 				<Surface
 					className="h-20 bg-app-base/80 backdrop-blur-md border-b border-text-primary/5 px-8 lg:px-12 flex items-center sticky top-0 z-40 rounded-none"
 					variant="default"

@@ -47,6 +47,7 @@ export function AppSearchField({
 			onChange={setInternalValue}
 			onClear={handleClear}
 			value={internalValue}
+			variant="secondary"
 		>
 			<SearchField.Group>
 				<SearchField.SearchIcon />

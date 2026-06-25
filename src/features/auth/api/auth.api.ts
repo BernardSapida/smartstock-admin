@@ -102,6 +102,9 @@ export const requestOTPApi = async (data: IRequestOTPRequest): Promise<IRequestO
 export const registerUserApi = async (data: IRegisterRequest): Promise<IRegisterResponse> => {
 	return authenticatedFetch<IRegisterResponse>(AUTH_CONFIG.endpoints.register, {
 		method: "POST",
-		body: JSON.stringify(data),
+		body: JSON.stringify({
+			...data,
+			phone: formatPhoneNumber(data.phone),
+		}),
 	});
 };

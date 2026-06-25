@@ -1,5 +1,5 @@
 /**
- * AppDateRangePicker — RHF-bound date range picker.
+ * AppDateRangePicker - RHF-bound date range picker.
  * Return type: { start: CalendarDate; end: CalendarDate } | null
  * Use `calendarDateRangeSchema` from @/lib/schemas/date.schema for Zod validation.
  */
@@ -53,7 +53,10 @@ export function AppDateRangePicker<T extends FieldValues>({
 			value={field.value ?? null}
 		>
 			<Label>{label}</Label>
-			<DateField.Group fullWidth>
+			<DateField.Group
+				fullWidth
+				variant="secondary"
+			>
 				<DateField.Input slot="start">{(segment) => <DateField.Segment segment={segment} />}</DateField.Input>
 				<DateRangePicker.RangeSeparator />
 				<DateField.Input slot="end">{(segment) => <DateField.Segment segment={segment} />}</DateField.Input>

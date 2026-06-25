@@ -46,6 +46,7 @@ export function AppSelect<T extends FieldValues>({
 				isDisabled={isDisabled || isLoading}
 				isInvalid={invalid}
 				isRequired={isRequired}
+				validationBehavior="aria"
 				onChange={(val) => {
 					field.onChange(val ?? null);
 					field.onBlur();
@@ -56,6 +57,7 @@ export function AppSelect<T extends FieldValues>({
 				placeholder={placeholder}
 				selectionMode={selectionMode}
 				value={field.value ?? null}
+				variant="secondary"
 			>
 				<Label>{label}</Label>
 				<Select.Trigger>

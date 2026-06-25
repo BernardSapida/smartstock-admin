@@ -46,7 +46,7 @@ export function RouteErrorFallback({ error, reset }: RouteErrorFallbackProps) {
 	return (
 		<div className="flex flex-col items-center justify-center min-h-[400px] gap-6 p-8 text-center">
 			<div className="flex flex-col gap-2 max-w-md">
-				<h2 className="text-2xl font-serif font-bold text-text-primary">Something went wrong</h2>
+				<h2 className="text-2xl font-bold text-text-primary">Something went wrong</h2>
 				<p className="text-text-secondary">{error.message || ERROR_MESSAGES.GENERIC}</p>
 			</div>
 			<Button

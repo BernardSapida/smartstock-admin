@@ -39,12 +39,14 @@ export function AppSwitch<T extends FieldValues>({
 				isSelected={Boolean(field.value)}
 				onChange={(val) => field.onChange(val)}
 			>
-				<Switch.Control>
-					<Switch.Thumb />
-				</Switch.Control>
-				<Switch.Content>
-					<Label>{label}</Label>
-					{description && <Description>{description}</Description>}
+				<Switch.Content className="flex flex-row items-center justify-between gap-3 w-full">
+					<span className="flex flex-col gap-1">
+						<Label>{label}</Label>
+						{description && <Description>{description}</Description>}
+					</span>
+					<Switch.Control>
+						<Switch.Thumb />
+					</Switch.Control>
 				</Switch.Content>
 			</Switch>
 			{error?.message && <FieldError className="text-sm">{error.message}</FieldError>}

@@ -1,12 +1,14 @@
 import { Surface } from "@heroui/react";
 import { Link } from "@tanstack/react-router";
-import { ChevronRight, Layout } from "lucide-react";
-import { APP_NAME } from "@/config/seo.config";
+import { ChevronRight } from "lucide-react";
+import { BrandLogo } from "@/components/ui/BrandLogo";
+import { APP_DESCRIPTION, APP_NAME } from "@/config/seo.config";
 
 interface NavItem {
 	href: string;
 	icon: React.ComponentType<{ className?: string }>;
 	title: string;
+	exact?: boolean;
 }
 
 interface AppSidebarProps {
@@ -21,13 +23,11 @@ export function AppSidebar({ bottom, navigation }: AppSidebarProps) {
 			variant="secondary"
 		>
 			<div className="flex items-center gap-3 px-3 mb-12">
-				<Link
-					className="flex h-10 w-10 items-center justify-center rounded-xl bg-app-brand text-white shadow-lg"
-					to="/"
-				>
-					<Layout className="h-6 w-6" />
-				</Link>
-				<span className="font-serif text-xl font-bold tracking-tight">{APP_NAME}</span>
+				<BrandLogo className="h-12 w-12" />
+				<div>
+					<p className="text-xl font-bold tracking-tight">{APP_NAME}</p>
+					<p className="text-xs font-bold tracking-tight text-muted">{APP_DESCRIPTION}</p>
+				</div>
 			</div>
 
 			<nav
@@ -36,6 +36,7 @@ export function AppSidebar({ bottom, navigation }: AppSidebarProps) {
 			>
 				{navigation.map((item) => (
 					<Link
+						activeOptions={{ exact: item.exact ?? false }}
 						activeProps={{ className: "bg-app-brand/10 text-app-brand" }}
 						className="flex items-center gap-3 px-4 h-12 rounded-2xl transition-all duration-200 group hover:bg-app-brand/5 font-semibold"
 						key={item.href}

@@ -123,11 +123,17 @@ export async function authenticatedFetch<T>(endpoint: string, options?: RequestI
 	}
 
 	if (!response.ok) {
-		const error = await response.json().catch(() => ({
-			message: "An error occurred",
-		}));
+		const rawBody = await response.text();
+		let message: string | undefined;
 
-		throw new Error(error.message || `HTTP ${response.status}`);
+		try {
+			message = JSON.parse(rawBody)?.message;
+		} catch {
+			// Body wasn't JSON (e.g. an HTML error page or empty body) — keep raw text.
+			message = rawBody;
+		}
+
+		throw new Error(message?.trim() || `HTTP ${response.status} ${response.statusText} (${url})`);
 	}
 
 	if (response.status === 204) {

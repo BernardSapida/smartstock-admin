@@ -21,7 +21,7 @@ function SignUpPage() {
 			footerLinkText="Sign in instead"
 			footerLinkTo="/sign-in"
 			footerText="Already have an account?"
-			subtitle="Create an account to get started with our platform."
+			subtitle="Create an account."
 			title="Join Us"
 		>
 			<RegisterForm />

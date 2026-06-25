@@ -10,12 +10,12 @@ export interface NavItem {
 	icon: LucideIcon;
 	roles: UserRole[]; // which roles can see this item
 	exact?: boolean; // match href exactly for active state (default: false)
-	children?: NavItem[]; // submenu items — inherit parent roles if not specified
+	children?: NavItem[]; // submenu items - inherit parent roles if not specified
 }
 
 // --- Navigation items ---
 // roles: list every role that can see this item.
-// Different roles can share the same href — just include all of them in roles[].
+// Different roles can share the same href - just include all of them in roles[].
 // For submenu items, roles are checked independently per child.
 
 export const navigationItems: NavItem[] = [
@@ -61,7 +61,7 @@ export const navigationItems: NavItem[] = [
 
 // --- Helper: filter items by role ---
 // Pass the current user's role to get their visible menu.
-// Recursively filters children too — a child hidden from a role
+// Recursively filters children too - a child hidden from a role
 // will not appear even if the parent is visible.
 
 export const getNavigation = (role: UserRole): NavItem[] => {

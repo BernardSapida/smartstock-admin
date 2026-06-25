@@ -1,21 +1,21 @@
-// SEO & metadata config — update this file to manage all app-level meta.
+// SEO & metadata config - update this file to manage all app-level meta.
 // Per-route titles are composed as: `${page} | ${APP_NAME}`
 
 import { env } from "@/env";
 
-// ---- Site identity — change these when customising the template ----
-export const APP_NAME = "REST App";
-export const APP_DESCRIPTION = "A REST-first template for TanStack Start, HeroUI, and a typed API client.";
+// ---- Site identity - change these when customising the template ----
+export const APP_NAME = "SmartStock";
+export const APP_DESCRIPTION = "Inventory & Recipes";
 // -------------------------------------------------------------------
 
 export const seo = {
 	name: APP_NAME,
 	description: APP_DESCRIPTION,
 
-	// Base URL — used for canonical links and OG URLs
+	// Base URL - used for canonical links and OG URLs
 	url: env.VITE_BASE_URL,
 
-	// Default OG image — place file in /public/og-image.png
+	// Default OG image - place file in /public/og-image.png
 	ogImage: "/og-image.png",
 
 	// Twitter / X card

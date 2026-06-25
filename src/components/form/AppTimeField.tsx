@@ -1,5 +1,5 @@
 /**
- * AppTimeField — RHF-bound time input.
+ * AppTimeField - RHF-bound time input.
  * Return type: Time (from @internationalized/date).
  * Zod schema: z.custom<Time>((v) => v instanceof Time, "Select a time")
  */
@@ -47,7 +47,7 @@ export function AppTimeField<T extends FieldValues>({
 			value={field.value ?? null}
 		>
 			<Label>{label}</Label>
-			<TimeField.Group>
+			<TimeField.Group variant="secondary">
 				<TimeField.Input>{(segment) => <TimeField.Segment segment={segment} />}</TimeField.Input>
 			</TimeField.Group>
 			{description && <Description>{description}</Description>}

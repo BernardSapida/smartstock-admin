@@ -46,6 +46,7 @@ export function AppAutocomplete<T extends FieldValues>({
 			isDisabled={isDisabled}
 			isInvalid={invalid}
 			isRequired={isRequired}
+			validationBehavior="aria"
 			onChange={(key) => {
 				field.onChange(key ? String(key) : null);
 				field.onBlur();
@@ -56,6 +57,7 @@ export function AppAutocomplete<T extends FieldValues>({
 			placeholder={placeholder}
 			selectionMode="single"
 			value={field.value ?? null}
+			variant="secondary"
 		>
 			<Label>{label}</Label>
 			<Autocomplete.Trigger>

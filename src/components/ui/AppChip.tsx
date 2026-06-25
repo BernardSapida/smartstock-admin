@@ -1,4 +1,5 @@
 import { Chip } from "@heroui/react";
+import clsx from "clsx";
 import type { ComponentProps, ReactNode } from "react";
 
 type ChipColor = ComponentProps<typeof Chip>["color"];
@@ -17,7 +18,7 @@ interface AppChipProps {
 export function AppChip({ label, color, variant, size, startContent, className }: AppChipProps) {
 	return (
 		<Chip
-			className={className}
+			className={clsx(className)}
 			color={color}
 			size={size}
 			variant={variant}
