@@ -16,14 +16,7 @@ import { AppTabs } from "@/components/ui/AppTabs";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor } from "@/features/inventory/firebase/inventory.writes";
 import { type SystemConfig, saveSystemConfig, useSystemConfig } from "@/features/settings/settings";
-import {
-	PERMISSION_KEYS,
-	PERMISSION_META,
-	updateUserActive,
-	updateUserPermissions,
-	updateUserRole,
-	useUsers,
-} from "@/features/users/users";
+import { updateUserActive, updateUserRole, useUsers } from "@/features/users/users";
 import { usePagination } from "@/hooks/use-pagination";
 import type { AppUser, UserRole } from "@/types/user";
 
@@ -314,7 +307,6 @@ function ManageUserModal({
 }) {
 	const [role, setRole] = useState<UserRole>("staff");
 	const [isActive, setIsActive] = useState(true);
-	const [perms, setPerms] = useState<Record<string, boolean>>({});
 	const [saving, setSaving] = useState(false);
 
 	// Reset local draft whenever a different user is opened.
@@ -322,7 +314,6 @@ function ManageUserModal({
 		if (!user) return;
 		setRole(user.role);
 		setIsActive(user.isActive);
-		setPerms(user.permissions ?? {});
 	}, [user]);
 
 	if (!user) return null;
@@ -333,10 +324,6 @@ function ManageUserModal({
 		try {
 			if (role !== user.role) await updateUserRole(user.uid, role, actor);
 			if (isActive !== user.isActive) await updateUserActive(user.uid, isActive, actor);
-			// Permissions only apply to staff; admins always have full access.
-			if (role === "staff" && JSON.stringify(perms) !== JSON.stringify(user.permissions ?? {})) {
-				await updateUserPermissions(user.uid, perms, actor);
-			}
 			notify.success({ title: "User updated", description: `Changes to ${name} have been saved.` });
 			onClose();
 		} catch (e) {
@@ -400,30 +387,6 @@ function ManageUserModal({
 						onChange={(next) => setRole(next ? "admin" : "staff")}
 					/>
 				</div>
-
-				{role === "admin" ? (
-					<div className="rounded-xl border border-foreground/10 bg-foreground/3 p-4">
-						<p className="text-sm font-medium text-foreground">Full access</p>
-						<p className="text-sm text-foreground/60">
-							Admins can use every feature. Turn off “Administrator access” to limit this user to specific permissions.
-						</p>
-					</div>
-				) : (
-					<div>
-						<h3 className="mb-2 text-sm font-semibold text-foreground">Access permissions</h3>
-						<div className="divide-y divide-foreground/10 rounded-xl border border-foreground/10">
-							{PERMISSION_KEYS.map((k) => (
-								<ToggleRow
-									description={PERMISSION_META[k].description}
-									isSelected={Boolean(perms[k])}
-									key={k}
-									label={PERMISSION_META[k].label}
-									onChange={(next) => setPerms((p) => ({ ...p, [k]: next }))}
-								/>
-							))}
-						</div>
-					</div>
-				)}
 			</div>
 		</AppModal>
 	);

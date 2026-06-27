@@ -62,67 +62,6 @@ export async function updateUserActive(uid: string, isActive: boolean, actor: Ac
 	});
 }
 
-export async function updateUserPermissions(
-	uid: string,
-	permissions: Record<string, boolean>,
-	actor: Actor,
-): Promise<void> {
-	await updateDoc(doc(db, "users", uid), { permissions, updatedAt: serverTimestamp() });
-	void logAction({
-		uid: actor.uid,
-		user: actor.name,
-		role: actor.role,
-		action: "SETTING",
-		module: "Users",
-		description: `Updated permissions for ${uid}`,
-	});
-}
-
 export async function updateOwnProfile(uid: string, data: { fullName: string; phoneNumber: string }): Promise<void> {
 	await updateDoc(doc(db, "users", uid), { ...data, updatedAt: serverTimestamp() });
 }
-
-export const PERMISSION_KEYS = [
-	"inventoryView",
-	"inventoryAdjust",
-	"recipePrepare",
-	"inspectionSubmit",
-	"notificationsView",
-	"forecastView",
-	"staffManage",
-] as const;
-
-export type PermissionKey = (typeof PERMISSION_KEYS)[number];
-
-// Human-readable label and explanation for each permission, shown to admins
-// in Settings → Permissions instead of the raw camelCase keys.
-export const PERMISSION_META: Record<PermissionKey, { label: string; description: string }> = {
-	inventoryView: {
-		label: "View inventory",
-		description: "See products, stock levels, and batches.",
-	},
-	inventoryAdjust: {
-		label: "Adjust stock",
-		description: "Add, remove, or correct inventory quantities.",
-	},
-	recipePrepare: {
-		label: "Prepare recipes",
-		description: "Record recipe preparations, deducting the ingredients used.",
-	},
-	inspectionSubmit: {
-		label: "Submit inspections",
-		description: "Complete and submit stock inspection checklists.",
-	},
-	notificationsView: {
-		label: "View notifications",
-		description: "See low-stock and expiry alerts.",
-	},
-	forecastView: {
-		label: "View forecasts & reports",
-		description: "Access restock, production, and expiry forecasts.",
-	},
-	staffManage: {
-		label: "Manage staff",
-		description: "Edit other staff members’ details and shift status.",
-	},
-};
