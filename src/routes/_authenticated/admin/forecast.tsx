@@ -8,6 +8,7 @@ import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
 import { TableFilterBar } from "@/components/ui/TableFilterBar";
 import { useInventory } from "@/features/inventory/hooks/use-inventory";
+import { useUsedStock } from "@/features/inventory/hooks/use-used-stock";
 import { usePreparations, useRecipes } from "@/features/recipes/hooks/use-recipes";
 import { usePagination } from "@/hooks/use-pagination";
 import { useTableFilter } from "@/hooks/use-table-filter";
@@ -54,6 +55,7 @@ function ForecastPage() {
 	const { rows } = useInventory();
 	const { recipes } = useRecipes();
 	const { preparations } = usePreparations();
+	const { items: usedStock } = useUsedStock();
 
 	const forecast = useMemo<ForecastRow[]>(() => {
 		const cutoff = new Date();
@@ -61,6 +63,8 @@ function ForecastPage() {
 		cutoff.setHours(0, 0, 0, 0);
 
 		const recipeById = new Map(recipes.map((r) => [r.id, r]));
+		// Remaining contents of opened units (ml/g) per product.
+		const usedByProduct = new Map(usedStock.map((u) => [u.id, u.remainingBase]));
 
 		// Accumulate base-unit consumption per ingredient name over the window
 		const consumed = new Map<string, number>();
@@ -79,19 +83,28 @@ function ForecastPage() {
 
 		return rows
 			.map((r) => {
-				const key = r.product.name.trim().toLowerCase();
+				const p = r.product;
+				const key = p.name.trim().toLowerCase();
 				const totalBase = consumed.get(key) ?? 0;
 				const avgBase = totalBase / WINDOW_DAYS;
-				const daysLeft = avgBase > 0 ? Math.floor(r.onHand / avgBase) : null;
-				const avgDisplay =
-					avgBase > 0
-						? `${fromBaseUnit(avgBase, r.product.displayUnit).toFixed(2)} ${r.product.displayUnit}/day`
-						: null;
+
+				// For measurable pcs products (bottles/cans) the recipe consumes the
+				// CONTENTS (ml/g), so convert on-hand pieces to the usage unit before
+				// comparing - otherwise we'd divide pieces by ml. On-hand contents =
+				// unopened pieces x unitSize + whatever remains in opened units.
+				const isMeasurable = p.measurable && p.baseUnit === "piece" && !!p.unitSize && !!p.usageUnit;
+				const unit = isMeasurable ? (p.usageUnit as string) : p.displayUnit;
+				const onHandBase = isMeasurable
+					? r.onHand * toBaseUnit(p.unitSize as number, p.usageUnit as string) + (usedByProduct.get(p.id) ?? 0)
+					: r.onHand;
+
+				const daysLeft = avgBase > 0 ? Math.floor(onHandBase / avgBase) : null;
+				const avgDisplay = avgBase > 0 ? `${fromBaseUnit(avgBase, unit).toFixed(2)} ${unit}/day` : null;
 				return {
-					id: r.product.id,
-					name: r.product.name,
-					category: r.product.category,
-					onHand: formatQuantity(r.onHand, r.product.displayUnit),
+					id: p.id,
+					name: p.name,
+					category: p.category,
+					onHand: formatQuantity(onHandBase, unit),
 					avgPerDay: avgDisplay,
 					daysLeft,
 				};
@@ -103,7 +116,7 @@ function ForecastPage() {
 				if (b.daysLeft === null) return -1;
 				return a.daysLeft - b.daysLeft;
 			});
-	}, [rows, recipes, preparations]);
+	}, [rows, recipes, preparations, usedStock]);
 
 	const { search, setSearch, category, setCategory, categories, filtered } = useTableFilter(
 		forecast,

@@ -28,7 +28,6 @@ import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminForecastRouteImport } from './routes/_authenticated/admin/forecast'
 import { Route as AuthenticatedAdminExpiryRouteImport } from './routes/_authenticated/admin/expiry'
 import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authenticated/admin/audit-logs'
-import { Route as AuthenticatedAdminAlertsRouteImport } from './routes/_authenticated/admin/alerts'
 import { Route as AuthenticatedAdminRecipesAddRouteImport } from './routes/_authenticated/admin/recipes_.add'
 import { Route as AuthenticatedAdminInventoryAddRouteImport } from './routes/_authenticated/admin/inventory_.add'
 import { Route as AuthenticatedAdminRecipesRecipeIdEditRouteImport } from './routes/_authenticated/admin/recipes_.$recipeId.edit'
@@ -137,12 +136,6 @@ const AuthenticatedAdminAuditLogsRoute =
     path: '/audit-logs',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminAlertsRoute =
-  AuthenticatedAdminAlertsRouteImport.update({
-    id: '/alerts',
-    path: '/alerts',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminRecipesAddRoute =
   AuthenticatedAdminRecipesAddRouteImport.update({
     id: '/recipes_/add',
@@ -177,7 +170,6 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/admin/alerts': typeof AuthenticatedAdminAlertsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/admin/forecast': typeof AuthenticatedAdminForecastRoute
@@ -201,7 +193,6 @@ export interface FileRoutesByTo {
   '/unauthorized': typeof UnauthorizedRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/profile': typeof AuthenticatedProfileRoute
-  '/admin/alerts': typeof AuthenticatedAdminAlertsRoute
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/admin/forecast': typeof AuthenticatedAdminForecastRoute
@@ -228,7 +219,6 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
-  '/_authenticated/admin/alerts': typeof AuthenticatedAdminAlertsRoute
   '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/_authenticated/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/_authenticated/admin/forecast': typeof AuthenticatedAdminForecastRoute
@@ -255,7 +245,6 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/profile'
-    | '/admin/alerts'
     | '/admin/audit-logs'
     | '/admin/expiry'
     | '/admin/forecast'
@@ -279,7 +268,6 @@ export interface FileRouteTypes {
     | '/unauthorized'
     | '/dashboard'
     | '/profile'
-    | '/admin/alerts'
     | '/admin/audit-logs'
     | '/admin/expiry'
     | '/admin/forecast'
@@ -305,7 +293,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/profile'
-    | '/_authenticated/admin/alerts'
     | '/_authenticated/admin/audit-logs'
     | '/_authenticated/admin/expiry'
     | '/_authenticated/admin/forecast'
@@ -466,13 +453,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAuditLogsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/alerts': {
-      id: '/_authenticated/admin/alerts'
-      path: '/alerts'
-      fullPath: '/admin/alerts'
-      preLoaderRoute: typeof AuthenticatedAdminAlertsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/recipes_/add': {
       id: '/_authenticated/admin/recipes_/add'
       path: '/recipes/add'
@@ -505,7 +485,6 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteChildren {
-  AuthenticatedAdminAlertsRoute: typeof AuthenticatedAdminAlertsRoute
   AuthenticatedAdminAuditLogsRoute: typeof AuthenticatedAdminAuditLogsRoute
   AuthenticatedAdminExpiryRoute: typeof AuthenticatedAdminExpiryRoute
   AuthenticatedAdminForecastRoute: typeof AuthenticatedAdminForecastRoute
@@ -523,7 +502,6 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
-  AuthenticatedAdminAlertsRoute: AuthenticatedAdminAlertsRoute,
   AuthenticatedAdminAuditLogsRoute: AuthenticatedAdminAuditLogsRoute,
   AuthenticatedAdminExpiryRoute: AuthenticatedAdminExpiryRoute,
   AuthenticatedAdminForecastRoute: AuthenticatedAdminForecastRoute,

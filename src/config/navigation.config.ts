@@ -1,5 +1,4 @@
 import {
-	AlertTriangle,
 	Bell,
 	Boxes,
 	ChefHat,
@@ -72,13 +71,6 @@ export const navigationItems: NavItem[] = [
 		title: "Expiry Tracker",
 		description: "Batches by expiry",
 		icon: Clock,
-		roles: ["admin"],
-	},
-	{
-		href: "/admin/alerts",
-		title: "Alerts",
-		description: "Stock & expiry alerts",
-		icon: AlertTriangle,
 		roles: ["admin"],
 	},
 	{
