@@ -1,7 +1,7 @@
 // Ingredient availability + max-cookable-servings, matching recipe ingredients
 // to products by NAME (legacy ingredient ids don't map to migrated product ids).
 
-import { toBaseUnit, unitInfo } from "@/lib/units";
+import { toBaseUnit, toProductBase } from "@/lib/units";
 import type { ProductWithBatches } from "@/types/inventory";
 import type { Recipe, RecipeIngredient } from "@/types/recipe";
 
@@ -40,7 +40,6 @@ export function ingredientStatus(ing: RecipeIngredient, index: ProductIndex, ser
 	}
 
 	const product = match.product;
-	const ingBase = unitInfo(ing.unit).base;
 
 	// Measurable pcs products (bottles, cans) are stored as pieces but used in ml/g in recipes.
 	// Convert onHand from pieces → usageUnit so the unit comparison is valid.
@@ -50,13 +49,17 @@ export function ingredientStatus(ing: RecipeIngredient, index: ProductIndex, ser
 		!!product.usageUnit &&
 		product.usageUnit !== "pcs" &&
 		!!product.unitSize;
-	const effectiveBase = isMeasurablePcs ? unitInfo(product.usageUnit!).base : product.baseUnit;
 	const haveBase = isMeasurablePcs
 		? toBaseUnit(match.onHand * (product.unitSize ?? 1), product.usageUnit!)
 		: match.onHand;
 
-	const unitMismatch = ingBase !== effectiveBase;
-	const requiredPerServingBase = ing.quantityPerServing > 0 ? toBaseUnit(ing.quantityPerServing, ing.unit) : 0;
+	// toProductBase applies the product's density when the ingredient is measured
+	// by volume (tbsp/tsp) but stocked by mass -- "1 tbsp sugar" -> 12.5 g. It
+	// returns null only when the conversion is truly impossible, which is the
+	// one case that counts as a unit mismatch.
+	const converted = ing.quantityPerServing > 0 ? toProductBase(ing.quantityPerServing, ing.unit, product) : 0;
+	const unitMismatch = converted == null;
+	const requiredPerServingBase = converted ?? 0;
 
 	// Blank/zero quantity = not a real constraint.
 	if (requiredPerServingBase <= 0 || unitMismatch) {

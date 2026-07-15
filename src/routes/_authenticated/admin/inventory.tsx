@@ -466,7 +466,9 @@ function BatchRow({
 	onSave: (newQtyDisplay: number) => Promise<void>;
 	onDelete: () => Promise<void>;
 }) {
-	const [qty, setQty] = useState(String(fromBaseUnit(batch.quantity, displayUnit)));
+	// Round for display: base<->display conversions (esp. density-based disposals)
+	// leave float noise like 1.5750099, which is meaningless at 3 decimals of kg/L.
+	const [qty, setQty] = useState(String(Math.round(fromBaseUnit(batch.quantity, displayUnit) * 1000) / 1000));
 	const [busy, setBusy] = useState(false);
 
 	const urgency =

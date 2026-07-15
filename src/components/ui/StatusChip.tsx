@@ -1,4 +1,5 @@
 import { Chip } from "@heroui/react";
+import clsx from "clsx";
 import type { ComponentProps } from "react";
 
 type ChipColor = ComponentProps<typeof Chip>["color"];
@@ -23,7 +24,7 @@ export function StatusChip({ status, statusMap, size, variant, className }: Stat
 
 	return (
 		<Chip
-			className={className}
+			className={clsx("capitalize", className)}
 			color={entry?.color ?? "default"}
 			size={size}
 			variant={variant}

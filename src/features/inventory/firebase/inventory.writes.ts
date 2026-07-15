@@ -17,7 +17,7 @@ import {
 import { notifyExpiringBatch, syncStockAlert } from "@/features/notifications/sync";
 import { logAction } from "@/lib/audit";
 import { db } from "@/lib/firebase";
-import { toBaseUnit, unitInfo } from "@/lib/units";
+import { suggestedDensity, toBaseUnit, unitInfo } from "@/lib/units";
 
 export interface Actor {
 	uid: string;
@@ -34,6 +34,7 @@ export interface ProductInput {
 	measurable: boolean;
 	unitSize: number | null;
 	usageUnit: string | null;
+	density: number | null; // g/ml; enables tbsp/tsp on mass-stocked ingredients
 }
 
 function productDoc(input: ProductInput) {
@@ -51,6 +52,9 @@ function productDoc(input: ProductInput) {
 		measurable: input.measurable,
 		unitSize: input.unitSize,
 		usageUnit: input.usageUnit,
+		// Fall back to the name-based default so existing seasonings get a
+		// usable density without the admin having to re-enter every product.
+		density: input.density ?? suggestedDensity(input.name),
 		updatedAt: serverTimestamp(),
 	};
 }

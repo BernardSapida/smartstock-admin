@@ -2,6 +2,7 @@ import {
 	Bell,
 	Boxes,
 	ChefHat,
+	ClipboardCheck,
 	Clock,
 	Factory,
 	FileBarChart,
@@ -78,6 +79,13 @@ export const navigationItems: NavItem[] = [
 		title: "Notifications",
 		description: "System notifications",
 		icon: Bell,
+		roles: ["admin"],
+	},
+	{
+		href: "/admin/inspections",
+		title: "Inspections",
+		description: "Assign and review stock inspections",
+		icon: ClipboardCheck,
 		roles: ["admin"],
 	},
 	{

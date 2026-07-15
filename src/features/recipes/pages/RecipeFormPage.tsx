@@ -14,7 +14,7 @@ import { AppTextField } from "@/components/form/AppTextField";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor } from "@/features/inventory/firebase/inventory.writes";
 import { addRecipe, updateRecipe } from "@/features/recipes/firebase/recipes.firebase";
-import { allowedUnitsForProduct } from "@/lib/units";
+import { allowedUnitsForProduct, explainConversion } from "@/lib/units";
 import type { Product } from "@/types/inventory";
 import { RECIPE_CATEGORIES, type Recipe, type RecipeIngredient } from "@/types/recipe";
 
@@ -321,6 +321,8 @@ interface IngredientRowProps {
 
 function IngredientRow({ control, index, options, productByName, setValue, onRemove }: IngredientRowProps) {
 	const name = useWatch({ control, name: `ingredients.${index}.name` });
+	const qty = useWatch({ control, name: `ingredients.${index}.quantity` });
+	const unit = useWatch({ control, name: `ingredients.${index}.unit` });
 	const product = name ? productByName.get(name.trim().toLowerCase()) : undefined;
 
 	const unitOptions = product ? allowedUnitsForProduct(product).map((u) => ({ value: u, label: u })) : ALL_UNIT_OPTIONS;
@@ -339,42 +341,49 @@ function IngredientRow({ control, index, options, productByName, setValue, onRem
 		}
 	}, [name, product, index, setValue]);
 
+	// Show the gram equivalent whenever the entry unit differs from how the
+	// product is stocked, so "2 tbsp sugar" reads as "= 25 g" before saving.
+	const conversion = product && qty > 0 && unit ? explainConversion(qty, unit, product) : null;
+
 	return (
-		<div className="grid grid-cols-[1fr_1fr_1fr_auto] items-start gap-2">
-			<AppAutocomplete
-				control={control}
-				isRequired
-				items={options}
-				label="Ingredient"
-				name={`ingredients.${index}.name`}
-				placeholder="Select a product"
-			/>
-			<AppNumberField
-				control={control}
-				isRequired
-				label="Qty"
-				minValue={0}
-				name={`ingredients.${index}.quantity`}
-			/>
-			<AppSelect
-				control={control}
-				isRequired
-				items={unitOptions}
-				label="Unit"
-				name={`ingredients.${index}.unit`}
-				placeholder="Unit"
-			/>
-			<Button
-				aria-label="Remove ingredient"
-				className="mt-6"
-				isIconOnly
-				onPress={onRemove}
-				size="sm"
-				type="button"
-				variant="ghost"
-			>
-				<Trash2 className="h-4 w-4 text-danger" />
-			</Button>
+		<div className="space-y-1">
+			<div className="grid grid-cols-[1fr_1fr_1fr_auto] items-start gap-2">
+				<AppAutocomplete
+					control={control}
+					isRequired
+					items={options}
+					label="Ingredient"
+					name={`ingredients.${index}.name`}
+					placeholder="Select a product"
+				/>
+				<AppNumberField
+					control={control}
+					isRequired
+					label="Qty"
+					minValue={0}
+					name={`ingredients.${index}.quantity`}
+				/>
+				<AppSelect
+					control={control}
+					isRequired
+					items={unitOptions}
+					label="Unit"
+					name={`ingredients.${index}.unit`}
+					placeholder="Unit"
+				/>
+				<Button
+					aria-label="Remove ingredient"
+					className="mt-6"
+					isIconOnly
+					onPress={onRemove}
+					size="sm"
+					type="button"
+					variant="ghost"
+				>
+					<Trash2 className="h-4 w-4 text-danger" />
+				</Button>
+			</div>
+			{conversion && <p className="pl-1 text-xs text-foreground/50">Deducts {conversion.split("= ")[1]} from stock</p>}
 		</div>
 	);
 }

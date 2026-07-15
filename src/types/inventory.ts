@@ -22,6 +22,10 @@ export interface Product {
 	measurable: boolean;
 	unitSize: number | null;
 	usageUnit: string | null;
+	// g per ml. Lets recipes measure a mass-stocked ingredient in tbsp/tsp
+	// (1 tbsp sugar = 12.5 g). Null = unknown; spoon units are then refused
+	// rather than silently mis-deducted. See lib/units.ts.
+	density: number | null;
 }
 
 export interface InventoryBatch {

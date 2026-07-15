@@ -18,7 +18,7 @@ interface AppChipProps {
 export function AppChip({ label, color, variant, size, startContent, className }: AppChipProps) {
 	return (
 		<Chip
-			className={clsx(className)}
+			className={clsx("capitalize", className)}
 			color={color}
 			size={size}
 			variant={variant}

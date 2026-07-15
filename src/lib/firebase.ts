@@ -4,7 +4,13 @@
 // Do NOT call initializeApp anywhere else.
 
 import { type FirebaseApp, getApp, getApps, initializeApp } from "firebase/app";
-import { type Auth, getAuth } from "firebase/auth";
+import {
+	type Auth,
+	browserLocalPersistence,
+	getAuth,
+	indexedDBLocalPersistence,
+	initializeAuth,
+} from "firebase/auth";
 import { type Firestore, getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -18,5 +24,22 @@ const firebaseConfig = {
 };
 
 export const app: FirebaseApp = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-export const auth: Auth = getAuth(app);
+
+// Pin auth persistence to local storage (IndexedDB, falling back to localStorage)
+// so a signed-in session survives a full page reload / hard refresh. Without this
+// the app relied on Firebase's default resolution, and a hard refresh could land
+// on an unauthenticated state and bounce to sign-in. initializeAuth lets us set
+// the persistence order explicitly; getAuth() is the fallback for when auth was
+// already initialized (e.g. Vite HMR re-executes this module).
+function createAuth(): Auth {
+	try {
+		return initializeAuth(app, {
+			persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+		});
+	} catch {
+		return getAuth(app);
+	}
+}
+
+export const auth: Auth = createAuth();
 export const db: Firestore = getFirestore(app);

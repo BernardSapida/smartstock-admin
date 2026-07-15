@@ -3,7 +3,7 @@ interface BrandLogoProps {
 }
 
 /**
- * SmartStock brand mark — the logo image.
+ * SmartStock brand mark - the logo image.
  * Size via className.
  */
 export function BrandLogo({ className = "h-5 w-5" }: BrandLogoProps) {

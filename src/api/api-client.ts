@@ -129,7 +129,7 @@ export async function authenticatedFetch<T>(endpoint: string, options?: RequestI
 		try {
 			message = JSON.parse(rawBody)?.message;
 		} catch {
-			// Body wasn't JSON (e.g. an HTML error page or empty body) — keep raw text.
+			// Body wasn't JSON (e.g. an HTML error page or empty body) - keep raw text.
 			message = rawBody;
 		}
 

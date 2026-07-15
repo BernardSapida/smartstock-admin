@@ -2,7 +2,7 @@ import { Button, Description } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "@tanstack/react-router";
 import { ArrowLeft, PackageSearch } from "lucide-react";
-import { useEffect } from "react";
+import { type FormEvent, useEffect, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import { notify } from "@/components/feedback";
@@ -15,7 +15,8 @@ import { PRODUCT_CATEGORY_OPTIONS } from "@/config/categories.config";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor, ProductInput } from "@/features/inventory/firebase/inventory.writes";
 import { addProduct, updateProduct } from "@/features/inventory/firebase/inventory.writes";
-import { fromBaseUnit, unitInfo } from "@/lib/units";
+import { useInventory } from "@/features/inventory/hooks/use-inventory";
+import { fromBaseUnit, resolveDensity, SPOON_UNITS, unitInfo } from "@/lib/units";
 import type { Product } from "@/types/inventory";
 
 // ── constants ────────────────────────────────────────────────────────────────
@@ -67,6 +68,12 @@ const schema = z.object({
 	// Only used when displayUnit = "pcs" and measurable = true
 	unitSize: z.number().nullable(),
 	usageUnit: z.string().nullable(),
+	// Whether this (mass-stocked) item can be measured by spoon in recipes.
+	spoonMeasurable: z.boolean(),
+	// Weight of ONE level tablespoon, in grams - the cook-friendly way to enter what
+	// is stored as a density. density (g/ml) = spoonGrams / (ml per tbsp). Nullable
+	// so the field can be blank; required-when-enabled is enforced in onSubmit.
+	spoonGrams: z.number().nullable(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -87,7 +94,11 @@ export function ProductFormPage({ editing }: Props) {
 		role: profile?.role ?? "admin",
 	};
 
-	const { control, handleSubmit, setValue } = useForm<FormValues>({
+	// ml in one tablespoon / teaspoon / cup - from the single unit table, so the
+	// grams-per-spoon maths never drifts from the recipe engine.
+	const TBSP_ML = unitInfo("tbsp").factor;
+
+	const { control, handleSubmit, setValue, setError } = useForm<FormValues>({
 		resolver: zodResolver(schema),
 		mode: "onBlur",
 		reValidateMode: "onChange",
@@ -101,14 +112,37 @@ export function ProductFormPage({ editing }: Props) {
 			measurable: editing?.measurable ?? false,
 			unitSize: editing?.unitSize ?? null,
 			usageUnit: editing?.usageUnit ?? null,
+			// Editing reflects the product's EFFECTIVE state (explicit density or the
+			// legacy name fallback), so an admin doesn't accidentally disable spoons by
+			// saving. A NEW product starts off + blank - the admin types the weight.
+			spoonMeasurable: editing ? resolveDensity(editing) != null : false,
+			spoonGrams: editing
+				? (() => {
+						const d = resolveDensity(editing);
+						return d != null ? Math.round(d * TBSP_ML * 100) / 100 : null;
+					})()
+				: null,
 		},
 	});
 
 	const watchedUnit = useWatch({ control, name: "displayUnit" });
 	const watchedMeasurable = useWatch({ control, name: "measurable" });
+	const watchedSpoon = useWatch({ control, name: "spoonMeasurable" });
+	const watchedSpoonGrams = useWatch({ control, name: "spoonGrams" });
+
+	// Existing product names (lower-cased), for the duplicate check below.
+	const { rows } = useInventory();
+	const takenNames = useMemo(
+		() => new Set(rows.map((r) => r.product.name.trim().toLowerCase()).filter(Boolean)),
+		[rows],
+	);
 
 	const isPcs = watchedUnit === "pcs";
 	const derivedMeta = deriveUnitMeta(watchedUnit);
+
+	// Spoon measurement only applies to mass-stocked items -- the ml <-> g crossing.
+	// A litre of oil already measures in ml, and pcs items are counted.
+	const stocksByMass = watchedUnit != null && unitInfo(watchedUnit).base === "g";
 
 	// When unit switches to non-pcs, auto-clear manual unitSize/usageUnit.
 	useEffect(() => {
@@ -120,7 +154,22 @@ export function ProductFormPage({ editing }: Props) {
 
 	const goBack = () => navigate({ to: "/admin/inventory" });
 
-	const onSubmit = handleSubmit(async (data) => {
+	const submitForm = handleSubmit(async (data) => {
+		// Block duplicate names (case-insensitive). When editing, the product's own
+		// name is obviously allowed.
+		const nameKey = data.name.trim().toLowerCase();
+		const isSelf = editing != null && editing.name.trim().toLowerCase() === nameKey;
+		if (!isSelf && takenNames.has(nameKey)) {
+			setError("name", { type: "manual", message: "A product with this name already exists." });
+			return;
+		}
+
+		// Spoon toggle on -> a tablespoon weight is required (user types it).
+		if (stocksByMass && data.spoonMeasurable && (data.spoonGrams == null || data.spoonGrams <= 0)) {
+			setError("spoonGrams", { type: "manual", message: "Enter the weight of 1 tablespoon." });
+			return;
+		}
+
 		const meta = deriveUnitMeta(data.displayUnit);
 		const input: ProductInput = {
 			name: data.name,
@@ -131,6 +180,11 @@ export function ProductFormPage({ editing }: Props) {
 			measurable: data.measurable,
 			unitSize: meta ? meta.unitSize : data.measurable ? data.unitSize : null,
 			usageUnit: meta ? meta.usageUnit : data.measurable ? data.usageUnit : "pcs",
+			// Store density (g/ml), derived from the tablespoon weight the user typed.
+			// Toggle on -> spoonGrams / mlPerTbsp; toggle off -> 0, the explicit
+			// "no spoons" marker that stops resolveDensity guessing by name; non-mass
+			// -> null (never configured, may fall back by name for legacy data).
+			density: stocksByMass ? (data.spoonMeasurable ? (data.spoonGrams as number) / TBSP_ML : 0) : null,
 		};
 
 		try {
@@ -149,6 +203,17 @@ export function ProductFormPage({ editing }: Props) {
 			});
 		}
 	});
+
+	// React Aria NumberField only writes its typed value into the form on blur,
+	// and pressing "Save" doesn't blur the focused field in time -- so a plain
+	// handleSubmit reads the PREVIOUSLY committed value (the save lagged one edit
+	// behind). Blur the active element first to force the commit, then submit on
+	// the next frame once that value has flushed into react-hook-form.
+	const onSubmit = (e: FormEvent) => {
+		e.preventDefault();
+		(document.activeElement as HTMLElement | null)?.blur();
+		requestAnimationFrame(() => void submitForm());
+	};
 
 	return (
 		<div className="space-y-8">
@@ -261,6 +326,62 @@ export function ProductFormPage({ editing }: Props) {
 									1 {watchedUnit} = {derivedMeta.unitSize} {derivedMeta.usageUnit}
 								</span>
 								. This will be used by recipes and the used-stock system automatically.
+							</div>
+						)}
+
+						{/* Mass-stocked items: a toggle (like Measurable) lets a recipe use
+						    spoons. We ask for the tablespoon WEIGHT - how a cook thinks -
+						    and store it as a density under the hood. */}
+						{stocksByMass && (
+							<div className="space-y-4 border-t border-foreground/10 pt-4">
+								<AppSwitch
+									control={control}
+									description={
+										watchedSpoon
+											? "Recipes can measure this item in tablespoons / teaspoons / cups."
+											: "Turn on for powders and granules a recipe measures by spoon like sugar, salt, flour, baking soda, spices. Leave off for items you only ever weigh (meat, whole vegetables)."
+									}
+									label="Measurable by spoon (tbsp / tsp)"
+									name="spoonMeasurable"
+								/>
+
+								{watchedSpoon && (
+									<div className="space-y-3">
+										<div>
+											<AppNumberField
+												control={control}
+												formatOptions={{ minimumFractionDigits: 0, maximumFractionDigits: 2 }}
+												isRequired
+												label="Weight of 1 level tablespoon (g)"
+												// minValue must be a multiple of step: React Aria snaps typed
+												// values to the grid (minValue + k*step) on blur, so a min of
+												// 0.01 with step 0.5 turned every entry into x.01 (13 -> 13.01).
+												// The submit guard enforces > 0, so a min of 0 is safe here.
+												minValue={0}
+												name="spoonGrams"
+												step={0.1}
+											/>
+											<Description className="text-xs text-foreground/50">
+												Weigh one level tablespoon of this ingredient and enter the grams. We work out teaspoons and
+												cups from it. (For reference: sugar ≈ 12.5 g, salt ≈ 18 g, flour ≈ 8 g.)
+											</Description>
+										</div>
+
+										{watchedSpoonGrams != null && watchedSpoonGrams > 0 && (
+											<div className="rounded-lg bg-foreground/5 px-4 py-3 text-sm text-foreground/60">
+												Recipes may measure this as:{" "}
+												{SPOON_UNITS.map((u, i) => (
+													<span key={u}>
+														{i > 0 && <span className="text-foreground/30"> · </span>}
+														<span className="font-semibold text-foreground">
+															1 {u} = {Math.round((unitInfo(u).factor / TBSP_ML) * watchedSpoonGrams * 100) / 100} g
+														</span>
+													</span>
+												))}
+											</div>
+										)}
+									</div>
+								)}
 							</div>
 						)}
 

@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdminRecipesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminProductionRouteImport } from './routes/_authenticated/admin/production'
 import { Route as AuthenticatedAdminNotificationsRouteImport } from './routes/_authenticated/admin/notifications'
 import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
+import { Route as AuthenticatedAdminInspectionsRouteImport } from './routes/_authenticated/admin/inspections'
 import { Route as AuthenticatedAdminForecastRouteImport } from './routes/_authenticated/admin/forecast'
 import { Route as AuthenticatedAdminExpiryRouteImport } from './routes/_authenticated/admin/expiry'
 import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authenticated/admin/audit-logs'
@@ -118,6 +119,12 @@ const AuthenticatedAdminInventoryRoute =
     path: '/inventory',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminInspectionsRoute =
+  AuthenticatedAdminInspectionsRouteImport.update({
+    id: '/inspections',
+    path: '/inspections',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminForecastRoute =
   AuthenticatedAdminForecastRouteImport.update({
     id: '/forecast',
@@ -173,6 +180,7 @@ export interface FileRoutesByFullPath {
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/admin/inspections': typeof AuthenticatedAdminInspectionsRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/admin/production': typeof AuthenticatedAdminProductionRoute
@@ -196,6 +204,7 @@ export interface FileRoutesByTo {
   '/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/admin/inspections': typeof AuthenticatedAdminInspectionsRoute
   '/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/admin/production': typeof AuthenticatedAdminProductionRoute
@@ -222,6 +231,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/audit-logs': typeof AuthenticatedAdminAuditLogsRoute
   '/_authenticated/admin/expiry': typeof AuthenticatedAdminExpiryRoute
   '/_authenticated/admin/forecast': typeof AuthenticatedAdminForecastRoute
+  '/_authenticated/admin/inspections': typeof AuthenticatedAdminInspectionsRoute
   '/_authenticated/admin/inventory': typeof AuthenticatedAdminInventoryRoute
   '/_authenticated/admin/notifications': typeof AuthenticatedAdminNotificationsRoute
   '/_authenticated/admin/production': typeof AuthenticatedAdminProductionRoute
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/admin/audit-logs'
     | '/admin/expiry'
     | '/admin/forecast'
+    | '/admin/inspections'
     | '/admin/inventory'
     | '/admin/notifications'
     | '/admin/production'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/admin/audit-logs'
     | '/admin/expiry'
     | '/admin/forecast'
+    | '/admin/inspections'
     | '/admin/inventory'
     | '/admin/notifications'
     | '/admin/production'
@@ -296,6 +308,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/audit-logs'
     | '/_authenticated/admin/expiry'
     | '/_authenticated/admin/forecast'
+    | '/_authenticated/admin/inspections'
     | '/_authenticated/admin/inventory'
     | '/_authenticated/admin/notifications'
     | '/_authenticated/admin/production'
@@ -432,6 +445,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/inspections': {
+      id: '/_authenticated/admin/inspections'
+      path: '/inspections'
+      fullPath: '/admin/inspections'
+      preLoaderRoute: typeof AuthenticatedAdminInspectionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/forecast': {
       id: '/_authenticated/admin/forecast'
       path: '/forecast'
@@ -488,6 +508,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAuditLogsRoute: typeof AuthenticatedAdminAuditLogsRoute
   AuthenticatedAdminExpiryRoute: typeof AuthenticatedAdminExpiryRoute
   AuthenticatedAdminForecastRoute: typeof AuthenticatedAdminForecastRoute
+  AuthenticatedAdminInspectionsRoute: typeof AuthenticatedAdminInspectionsRoute
   AuthenticatedAdminInventoryRoute: typeof AuthenticatedAdminInventoryRoute
   AuthenticatedAdminNotificationsRoute: typeof AuthenticatedAdminNotificationsRoute
   AuthenticatedAdminProductionRoute: typeof AuthenticatedAdminProductionRoute
@@ -505,6 +526,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminAuditLogsRoute: AuthenticatedAdminAuditLogsRoute,
   AuthenticatedAdminExpiryRoute: AuthenticatedAdminExpiryRoute,
   AuthenticatedAdminForecastRoute: AuthenticatedAdminForecastRoute,
+  AuthenticatedAdminInspectionsRoute: AuthenticatedAdminInspectionsRoute,
   AuthenticatedAdminInventoryRoute: AuthenticatedAdminInventoryRoute,
   AuthenticatedAdminNotificationsRoute: AuthenticatedAdminNotificationsRoute,
   AuthenticatedAdminProductionRoute: AuthenticatedAdminProductionRoute,

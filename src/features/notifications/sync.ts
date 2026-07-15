@@ -17,6 +17,11 @@ const EXPIRY_WINDOW_DAYS = 7;
  * alerts: emit an out-of-stock / low-stock notification, or clear stale ones
  * once the product is healthy again. Keep the thresholds in sync with
  * `deriveStatus` so the inbox matches the Alerts page.
+ *
+ * Alerts target "all", not "admin": staff are the ones who actually restock and
+ * pull expiring items, so an alert only an admin can see is an alert nobody acts
+ * on. These used to be admin-only, which is why the staff notifications screen on
+ * mobile appeared permanently empty.
  */
 export async function syncStockAlert(productId: string): Promise<void> {
 	try {
@@ -35,7 +40,7 @@ export async function syncStockAlert(productId: string): Promise<void> {
 			await createNotification({
 				title: `${name} is out of stock`,
 				message: `${name} has run out. Restock as soon as possible.`,
-				targetRole: "admin",
+				targetRole: "all",
 				type: "out_of_stock",
 				itemId: productId,
 			});
@@ -44,7 +49,7 @@ export async function syncStockAlert(productId: string): Promise<void> {
 			await createNotification({
 				title: `Low stock: ${name}`,
 				message: `${name} is running low (${formatQuantity(onHand, displayUnit)} on hand).`,
-				targetRole: "admin",
+				targetRole: "all",
 				type: "low_stock",
 				itemId: productId,
 			});
@@ -73,7 +78,7 @@ export async function notifyExpiringBatch(args: {
 		await createNotification({
 			title: `Expiring soon: ${args.productName}`,
 			message: `A batch of ${args.productName} expires in ${days} day(s).`,
-			targetRole: "admin",
+			targetRole: "all",
 			type: "expiry",
 			itemId: args.batchId,
 		});

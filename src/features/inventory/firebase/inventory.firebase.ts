@@ -19,6 +19,7 @@ function toProduct(id: string, d: Record<string, unknown>): Product {
 		measurable: (d.measurable as boolean) ?? false,
 		unitSize: (d.unitSize as number) ?? null,
 		usageUnit: (d.usageUnit as string) ?? null,
+		density: (d.density as number) ?? null,
 	};
 }
 
@@ -93,16 +94,26 @@ export function watchInventory(cb: (rows: ProductWithBatches[]) => void): () => 
 		if (haveProducts && haveBatches) cb(join(products, batches));
 	};
 
-	const unsubP = onSnapshot(collection(db, "products"), (snap) => {
-		products = snap.docs.map((d) => toProduct(d.id, d.data()));
-		haveProducts = true;
-		emit();
-	});
-	const unsubB = onSnapshot(collection(db, "inventory_batches"), (snap) => {
-		batches = snap.docs.map((d) => toBatch(d.id, d.data()));
-		haveBatches = true;
-		emit();
-	});
+	// Without an error callback a denied/failed snapshot is swallowed silently and
+	// the UI hangs on its loading state. Log so permission issues are diagnosable.
+	const unsubP = onSnapshot(
+		collection(db, "products"),
+		(snap) => {
+			products = snap.docs.map((d) => toProduct(d.id, d.data()));
+			haveProducts = true;
+			emit();
+		},
+		(err) => console.error("watchInventory: products subscription failed", err),
+	);
+	const unsubB = onSnapshot(
+		collection(db, "inventory_batches"),
+		(snap) => {
+			batches = snap.docs.map((d) => toBatch(d.id, d.data()));
+			haveBatches = true;
+			emit();
+		},
+		(err) => console.error("watchInventory: batches subscription failed", err),
+	);
 
 	return () => {
 		unsubP();

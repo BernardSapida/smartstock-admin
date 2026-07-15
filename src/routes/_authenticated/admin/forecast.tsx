@@ -12,7 +12,7 @@ import { useUsedStock } from "@/features/inventory/hooks/use-used-stock";
 import { usePreparations, useRecipes } from "@/features/recipes/hooks/use-recipes";
 import { usePagination } from "@/hooks/use-pagination";
 import { useTableFilter } from "@/hooks/use-table-filter";
-import { formatQuantity, fromBaseUnit, toBaseUnit } from "@/lib/units";
+import { formatQuantity, fromBaseUnit, toBaseUnit, toProductBase } from "@/lib/units";
 
 export const Route = createFileRoute("/_authenticated/admin/forecast")({
 	component: ForecastPage,
@@ -66,6 +66,11 @@ function ForecastPage() {
 		// Remaining contents of opened units (ml/g) per product.
 		const usedByProduct = new Map(usedStock.map((u) => [u.id, u.remainingBase]));
 
+		// Products by name, so consumption converts through each product's own density:
+		// "1 tbsp sugar" is 12.5 g, not 1. A bare toBaseUnit() here would treat a
+		// tablespoon of a gram-stocked product as an ml value and skew the forecast.
+		const productByName = new Map(rows.map((r) => [r.product.name.trim().toLowerCase(), r.product]));
+
 		// Accumulate base-unit consumption per ingredient name over the window
 		const consumed = new Map<string, number>();
 		for (const prep of preparations) {
@@ -75,8 +80,12 @@ function ForecastPage() {
 			if (!recipe) continue;
 			for (const ing of recipe.ingredients) {
 				if (ing.quantityPerServing <= 0) continue;
-				const base = toBaseUnit(ing.quantityPerServing * prep.servings, ing.unit);
 				const key = ing.name.trim().toLowerCase();
+				const product = productByName.get(key);
+				if (!product) continue; // unmatched ingredient - nothing to forecast against
+				// null = units can't be reconciled; skip rather than book a bogus figure.
+				const base = toProductBase(ing.quantityPerServing * prep.servings, ing.unit, product);
+				if (base == null) continue;
 				consumed.set(key, (consumed.get(key) ?? 0) + base);
 			}
 		}

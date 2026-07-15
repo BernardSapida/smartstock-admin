@@ -1,11 +1,13 @@
 import { Button } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
+import type { Timestamp } from "firebase/firestore";
 import { AlertTriangle, Download, FileBarChart, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
 import { AppTabs } from "@/components/ui/AppTabs";
+import { type DateRange, DateRangeFilter, EMPTY_RANGE, isEmptyRange } from "@/components/ui/DateRangeFilter";
 import { TableFilterBar } from "@/components/ui/TableFilterBar";
 import { SimpleBarChart } from "@/features/dashboard/SimpleBarChart";
 import { flattenExpiring } from "@/features/expiry/expiry";
@@ -24,8 +26,40 @@ export const Route = createFileRoute("/_authenticated/admin/reports")({
 
 type Tab = "restock" | "cook" | "production" | "expiry";
 
+/**
+ * Which reports have a date to filter ON.
+ *
+ * Production is a log of events (preparedAt) and Expiry is a set of dated batches
+ * (expirationDate) - both are genuinely date-scopable. Restock and Can-Cook are
+ * derived from *current* on-hand stock; the system keeps no historical snapshot of
+ * stock levels, so "restock report for July 1–5" is unanswerable. Rather than show
+ * a date picker that quietly changes nothing on those tabs, we hide it and say why.
+ */
+const DATE_SCOPED: Record<Tab, boolean> = {
+	restock: false,
+	cook: false,
+	production: true,
+	expiry: true,
+};
+
 const byName = (r: { name: string }) => r.name;
 const byCategory = (r: { category: string }) => r.category;
+
+function startOfDay(d: Date): Date {
+	const x = new Date(d);
+	x.setHours(0, 0, 0, 0);
+	return x;
+}
+
+function endOfDay(d: Date): Date {
+	const x = new Date(d);
+	x.setHours(23, 59, 59, 999);
+	return x;
+}
+
+function fmtDate(d: Date | null): string {
+	return d ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "…";
+}
 
 const STATUS_DISPLAY = {
 	out: { label: "Out of stock", color: "danger" as const, Icon: XCircle },
@@ -37,8 +71,26 @@ function ReportsPage() {
 	const { recipes } = useRecipes();
 	const { preparations } = usePreparations();
 	const [tab, setTab] = useState<Tab>("restock");
+	const [range, setRange] = useState<DateRange>(EMPTY_RANGE);
 
 	const index = useMemo(() => buildProductIndex(rows), [rows]);
+
+	// Production is filtered by WHEN IT HAPPENED (preparedAt); Expiry by WHEN THE
+	// BATCH EXPIRES. Restock and Can-Cook are live snapshots of current stock --
+	// there is no historical stock-level record to filter, so a date range on them
+	// would be a control that silently does nothing. See DATE_SCOPED below.
+	const inRange = useMemo(() => {
+		const from = range.start ? startOfDay(range.start).getTime() : null;
+		const to = range.end ? endOfDay(range.end).getTime() : null;
+		return (ts: Timestamp | null): boolean => {
+			if (from == null && to == null) return true;
+			if (!ts) return false; // an undated row can't be inside a bounded range
+			const ms = ts.toMillis();
+			if (from != null && ms < from) return false;
+			if (to != null && ms > to) return false;
+			return true;
+		};
+	}, [range]);
 
 	const restock = useMemo(
 		() =>
@@ -75,6 +127,7 @@ function ReportsPage() {
 	const production = useMemo(() => {
 		const byRecipe = new Map<string, { servings: number; category: string }>();
 		for (const p of preparations) {
+			if (!inRange(p.preparedAt)) continue;
 			const cur = byRecipe.get(p.recipeName) ?? { servings: 0, category: p.category };
 			cur.servings += p.servings;
 			byRecipe.set(p.recipeName, cur);
@@ -82,12 +135,13 @@ function ReportsPage() {
 		return [...byRecipe.entries()]
 			.map(([name, { servings, category }], i) => ({ id: String(i), name, category, servings }))
 			.sort((a, b) => b.servings - a.servings);
-	}, [preparations]);
+	}, [preparations, inRange]);
 
 	const expiry = useMemo(
 		() =>
 			flattenExpiring(rows)
 				.filter((b) => b.urgency !== "ok" && b.urgency !== "none")
+				.filter((b) => inRange(b.batch.expirationDate))
 				.map((b) => ({
 					id: b.batch.id,
 					name: b.productName,
@@ -96,7 +150,7 @@ function ReportsPage() {
 					daysLeft: b.daysLeft ?? "-",
 					urgency: b.urgency,
 				})),
-		[rows],
+		[rows, inRange],
 	);
 
 	const restockFilter = useTableFilter(restock, byName, byCategory);
@@ -390,6 +444,30 @@ function ReportsPage() {
 					Export CSV
 				</Button>
 			</div>
+
+			{DATE_SCOPED[tab] ? (
+				<div className="rounded-xl border border-foreground/10 p-4">
+					<DateRangeFilter
+						label={tab === "production" ? "Prepared between" : "Expiring between"}
+						onChange={setRange}
+						value={range}
+					/>
+					{!isEmptyRange(range) && (
+						<p className="mt-2 text-xs text-foreground/50">
+							Showing {tab === "production" ? "preparations recorded" : "batches expiring"} from{" "}
+							<span className="font-semibold text-foreground">{fmtDate(range.start)}</span> to{" "}
+							<span className="font-semibold text-foreground">{fmtDate(range.end)}</span>. The CSV export matches this
+							range.
+						</p>
+					)}
+				</div>
+			) : (
+				<p className="text-xs text-foreground/50">
+					This report reflects <span className="font-semibold text-foreground">current stock levels</span>, so it has no
+					date range - there is no historical stock snapshot to filter. Use the Production or Expiry tab for date-scoped
+					reporting.
+				</p>
+			)}
 
 			<AppTabs
 				items={tabItems}

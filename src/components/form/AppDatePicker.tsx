@@ -62,7 +62,14 @@ export function AppDatePicker<T extends FieldValues>({
 				</DateField.Suffix>
 			</DateField.Group>
 			<DatePicker.Popover>
-				<Calendar aria-label={label}>
+				{/* min/maxValue must be repeated here: the composable Calendar doesn't
+				    read them from the DatePicker context, so without this the calendar
+				    still lets you click out-of-range days. */}
+				<Calendar
+					aria-label={label}
+					maxValue={maxValue}
+					minValue={minValue}
+				>
 					<Calendar.Header>
 						<Calendar.YearPickerTrigger>
 							<Calendar.YearPickerTriggerHeading />
