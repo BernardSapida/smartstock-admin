@@ -61,6 +61,34 @@ function fmtDate(d: Date | null): string {
 	return d ? d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "…";
 }
 
+// Filename-safe local date, "MMM DD, YYYY" (e.g. "Jul 16, 2026"). Comma is legal
+// in filenames; we only avoid the chars Windows rejects (\ / : * ? " < > |).
+function fileDate(d: Date): string {
+	const month = d.toLocaleDateString("en-US", { month: "short" });
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${month} ${day}, ${d.getFullYear()}`;
+}
+
+/**
+ * Builds the export filename as "<date> - <Report Name>.csv".
+ *
+ * Date-scoped tabs (production, expiry) lead with the selected range so the file
+ * name matches the data inside it; a partial or empty range degrades gracefully.
+ * Live snapshot tabs (restock, cook) have no range, so we stamp the generation
+ * date - that's the only date that means anything for a "current stock" report.
+ */
+function reportFilename(reportName: string, dateScoped: boolean, range: DateRange): string {
+	let datePart = fileDate(new Date());
+	if (dateScoped && !isEmptyRange(range)) {
+		const from = range.start ? fileDate(range.start) : null;
+		const to = range.end ? fileDate(range.end) : null;
+		if (from && to) datePart = `${from} to ${to}`;
+		else if (from) datePart = `from ${from}`;
+		else if (to) datePart = `to ${to}`;
+	}
+	return `${datePart} - ${reportName}.csv`;
+}
+
 const STATUS_DISPLAY = {
 	out: { label: "Out of stock", color: "danger" as const, Icon: XCircle },
 	low: { label: "Low stock", color: "warning" as const, Icon: AlertTriangle },
@@ -186,27 +214,28 @@ function ReportsPage() {
 	}, [expiry]);
 
 	const exportCurrent = () => {
+		const name = (base: string) => reportFilename(base, DATE_SCOPED[tab], range);
 		if (tab === "restock")
 			downloadCsv(
-				"restock-report.csv",
+				name("Restock Report"),
 				["Product", "On hand", "Threshold", "Status"],
 				restock.map((r) => [r.name, r.onHand, r.threshold, r.status]),
 			);
 		else if (tab === "cook")
 			downloadCsv(
-				"can-cook-report.csv",
+				name("Can-Cook Report"),
 				["Recipe", "Category", "Can cook"],
 				cook.map((r) => [r.name, r.category, r.canCook]),
 			);
 		else if (tab === "production")
 			downloadCsv(
-				"production-report.csv",
+				name("Production Report"),
 				["Recipe", "Servings"],
 				production.map((r) => [r.name, r.servings]),
 			);
 		else
 			downloadCsv(
-				"expiry-report.csv",
+				name("Expiry Report"),
 				["Product", "Qty", "Days left", "Urgency"],
 				expiry.map((r) => [r.name, r.qty, r.daysLeft, r.urgency]),
 			);
