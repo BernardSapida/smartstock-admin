@@ -30,6 +30,8 @@ export type NotificationType =
 	| "expiry"
 	| "recipe_prepared"
 	| "inspection_alert"
+	| "staff_login"
+	| "staff_logout"
 	| "system"
 	| "general";
 

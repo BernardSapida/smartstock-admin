@@ -17,9 +17,10 @@ interface NavItem {
 interface MobileDrawerProps {
 	bottom?: React.ReactNode;
 	navigation: NavItem[];
+	unreadCount?: number;
 }
 
-export function AppMobileDrawer({ bottom, navigation }: MobileDrawerProps) {
+export function AppMobileDrawer({ bottom, navigation, unreadCount = 0 }: MobileDrawerProps) {
 	const { isSidebarOpen, toggleSidebar } = useUIStore();
 	const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -100,6 +101,11 @@ export function AppMobileDrawer({ bottom, navigation }: MobileDrawerProps) {
 								>
 									<item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
 									<span className="text-sm">{item.title}</span>
+									{item.href.includes("/notifications") && unreadCount > 0 && (
+										<span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-app-brand px-1.5 text-xs font-bold text-white">
+											{unreadCount > 99 ? "99+" : unreadCount}
+										</span>
+									)}
 								</Link>
 							))}
 						</nav>

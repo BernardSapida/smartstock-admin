@@ -20,6 +20,8 @@ function colorForType(type: string): ChipColor {
 	if (t.includes("low") && t.includes("stock")) return "warning";
 	if (t.includes("inspection") || t.includes("alert")) return "warning";
 	if (t.includes("recipe")) return "success";
+	if (t.includes("login")) return "success";
+	if (t.includes("logout")) return "default";
 	if (t.includes("task")) return "accent";
 	return "default";
 }

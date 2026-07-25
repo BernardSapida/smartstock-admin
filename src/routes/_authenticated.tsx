@@ -10,6 +10,7 @@ import { AppSpinner } from "@/components/ui/AppSpinner";
 import { getNavigation } from "@/config/navigation.config";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import { useLogout } from "@/features/auth/hooks/use-firebase-auth";
+import { useNotifications } from "@/features/notifications/use-notifications";
 import { useSyncSpoonDefaults } from "@/features/settings/settings";
 import { useRouteBreadcrumbs } from "@/hooks/useRouteBreadcrumbs";
 import { useUIStore } from "@/store/ui.store";
@@ -24,6 +25,10 @@ function AppLayout() {
 	const onLogout = useLogout();
 	const breadcrumbs = useRouteBreadcrumbs();
 	const { toggleSidebar } = useUIStore();
+
+	// Live unread count for the nav badge (called before the early return so the
+	// hook order stays stable; the hook no-ops while role is undefined).
+	const { unreadCount } = useNotifications(profile?.role);
 
 	// Push the global spoon-conversion table into the units module app-wide, so
 	// recipe math on every screen resolves the same densities as mobile.
@@ -57,6 +62,7 @@ function AppLayout() {
 					/>
 				}
 				navigation={navigation}
+				unreadCount={unreadCount}
 			/>
 			<AppMobileDrawer
 				bottom={
@@ -66,6 +72,7 @@ function AppLayout() {
 					/>
 				}
 				navigation={navigation}
+				unreadCount={unreadCount}
 			/>
 
 			{/* Main Content */}

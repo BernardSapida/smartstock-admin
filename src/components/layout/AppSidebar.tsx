@@ -14,9 +14,10 @@ interface NavItem {
 interface AppSidebarProps {
 	bottom?: React.ReactNode;
 	navigation: NavItem[];
+	unreadCount?: number;
 }
 
-export function AppSidebar({ bottom, navigation }: AppSidebarProps) {
+export function AppSidebar({ bottom, navigation, unreadCount = 0 }: AppSidebarProps) {
 	return (
 		<Surface
 			className="hidden lg:flex flex-col w-72 h-screen fixed left-0 top-0 border-r border-text-primary/5 p-6 z-50 rounded-none shadow-none text-left bg-app-base"
@@ -44,6 +45,11 @@ export function AppSidebar({ bottom, navigation }: AppSidebarProps) {
 					>
 						<item.icon className="h-5 w-5 transition-transform group-hover:scale-110" />
 						<span className="text-sm">{item.title}</span>
+						{item.href.includes("/notifications") && unreadCount > 0 && (
+							<span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-app-brand px-1.5 text-xs font-bold text-white">
+								{unreadCount > 99 ? "99+" : unreadCount}
+							</span>
+						)}
 						<ChevronRight className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity" />
 					</Link>
 				))}
