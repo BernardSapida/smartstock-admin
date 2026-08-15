@@ -11,7 +11,7 @@ export function BrandLogo({ className = "h-5 w-5" }: BrandLogoProps) {
 		<img
 			alt="SmartStock"
 			className={`${className} object-contain`}
-			src="/assets/smartstock.png"
+			src="/assets/logo.png"
 		/>
 	);
 }

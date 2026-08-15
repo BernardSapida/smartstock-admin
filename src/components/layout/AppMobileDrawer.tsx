@@ -70,8 +70,8 @@ export function AppMobileDrawer({ bottom, navigation, unreadCount = 0 }: MobileD
 								className="flex items-center gap-3 w-full"
 								to="/"
 							>
-								<div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl bg-app-brand text-white shadow-lg">
-									<BrandLogo className="h-6 w-6" />
+								<div className="hidden sm:flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-lg">
+									<BrandLogo className="h-12 w-12" />
 								</div>
 								<span className="text-xl font-bold tracking-tight">{APP_NAME}</span>
 							</Link>
