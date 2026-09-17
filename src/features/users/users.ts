@@ -21,6 +21,7 @@ function toUser(uid: string, d: Record<string, unknown>): AppUser {
 		isActive: (d.isActive as boolean) ?? true,
 		shiftOn: (d.shiftOn as boolean) ?? false,
 		isArchived: (d.isArchived as boolean) ?? false,
+		mustChangePassword: (d.mustChangePassword as boolean) ?? false,
 		permissions: (d.permissions as Record<string, boolean>) ?? {},
 		photoUrl: (d.photoUrl as string) ?? "",
 	};
@@ -89,4 +90,9 @@ export async function rejectUser(uid: string, actor: Actor): Promise<void> {
 
 export async function updateOwnProfile(uid: string, data: { fullName: string; phoneNumber: string }): Promise<void> {
 	await updateDoc(doc(db, "users", uid), { ...data, updatedAt: serverTimestamp() });
+}
+
+/** Clears the forced-change-password flag after the user sets their own password. */
+export async function clearMustChangePassword(uid: string): Promise<void> {
+	await updateDoc(doc(db, "users", uid), { mustChangePassword: false, updatedAt: serverTimestamp() });
 }

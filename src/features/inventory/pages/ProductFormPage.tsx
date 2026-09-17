@@ -11,6 +11,7 @@ import { AppNumberField } from "@/components/form/AppNumberField";
 import { AppSelect } from "@/components/form/AppSelect";
 import { AppSwitch } from "@/components/form/AppSwitch";
 import { AppTextField } from "@/components/form/AppTextField";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { PRODUCT_CATEGORY_OPTIONS } from "@/config/categories.config";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor, ProductInput } from "@/features/inventory/firebase/inventory.writes";
@@ -229,15 +230,13 @@ export function ProductFormPage({ editing }: Props) {
 				</Button>
 			</div>
 
-			<div className="flex items-center gap-3">
-				<PackageSearch className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">{editing ? `Edit: ${editing.name}` : "Add Product"}</h1>
-					<p className="text-sm text-foreground/60">
-						{editing ? "Update the product details below." : "Fill in the details to add a new product to inventory."}
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				description={
+					editing ? "Update the product details below." : "Fill in the details to add a new product to inventory."
+				}
+				icon={PackageSearch}
+				title={editing ? `Edit: ${editing.name}` : "Add Product"}
+			/>
 
 			{/* ── form ───────────────────────────────────────────────────────── */}
 			<form
@@ -285,7 +284,7 @@ export function ProductFormPage({ editing }: Props) {
 								Stock is stored in the base unit (g / ml / piece). You enter and view quantities in this unit.
 							</Description>
 						</div>
-						<div className="grid grid-cols-2 gap-4">
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 							<AppNumberField
 								control={control}
 								label={`Min. threshold${watchedUnit ? ` (${watchedUnit})` : ""}`}

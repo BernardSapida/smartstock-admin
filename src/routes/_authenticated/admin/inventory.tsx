@@ -5,6 +5,7 @@ import { Layers, PackageSearch, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { notify } from "@/components/feedback";
 import { AppSearchField } from "@/components/form/AppSearchField";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppPagination } from "@/components/ui/AppPagination";
@@ -177,24 +178,20 @@ function InventoryPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex flex-wrap items-center justify-between gap-3">
-				<div className="flex items-center gap-3">
-					<PackageSearch className="h-7 w-7 text-app-brand" />
-					<div>
-						<h1 className="text-2xl font-bold text-foreground">Inventory</h1>
-						<p className="text-sm text-foreground/60">
-							{stats.total} products · batch model (each batch keeps its own expiry).
-						</p>
-					</div>
-				</div>
-				<Button
-					onPress={() => navigate({ to: "/admin/inventory/add" })}
-					variant="primary"
-				>
-					<Plus className="mr-1 h-4 w-4" />
-					Add product
-				</Button>
-			</div>
+			<PageHeader
+				actions={
+					<Button
+						onPress={() => navigate({ to: "/admin/inventory/add" })}
+						variant="primary"
+					>
+						<Plus className="mr-1 h-4 w-4" />
+						Add product
+					</Button>
+				}
+				description={`${stats.total} products · batch model (each batch keeps its own expiry).`}
+				icon={PackageSearch}
+				title="Inventory"
+			/>
 
 			<AppTabs
 				defaultSelectedKey="stock"

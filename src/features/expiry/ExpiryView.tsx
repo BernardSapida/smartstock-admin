@@ -2,6 +2,7 @@ import { Button, Surface } from "@heroui/react";
 import { Clock } from "lucide-react";
 import { useMemo, useState } from "react";
 import { notify } from "@/components/feedback";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { useAuth } from "@/features/auth/context/AuthProvider";
@@ -41,17 +42,11 @@ export function ExpiryView({ mode }: { mode: "admin" | "staff" }) {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center gap-3">
-				<Clock className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">
-						{mode === "admin" ? "Expiry Tracker" : "Expiry Checks"}
-					</h1>
-					<p className="text-sm text-foreground/60">
-						Per-batch expiry{mode === "admin" ? " (read-only reporting)." : " - mark checked or report disposal."}
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				description={`Per-batch expiry${mode === "admin" ? " (read-only reporting)." : " - mark checked or report disposal."}`}
+				icon={Clock}
+				title={mode === "admin" ? "Expiry Tracker" : "Expiry Checks"}
+			/>
 
 			<div className="flex flex-wrap gap-3">
 				<AppChip

@@ -4,6 +4,7 @@ import type { Timestamp } from "firebase/firestore";
 import { Factory } from "lucide-react";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
@@ -115,15 +116,11 @@ function ProductionPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center gap-3">
-				<Factory className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">Production Monitor</h1>
-					<p className="text-sm text-foreground/60">
-						Read-only - what staff prepared. {totals.count} preparations · {totals.servings} servings.
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				description={`Read-only - what staff prepared. ${totals.count} preparations · ${totals.servings} servings.`}
+				icon={Factory}
+				title="Production Monitor"
+			/>
 
 			{totals.top.length > 0 && (
 				<div className="flex flex-wrap gap-2">

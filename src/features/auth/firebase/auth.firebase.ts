@@ -27,6 +27,7 @@ function toAppUser(uid: string, data: Record<string, unknown>): AppUser {
 		isActive: (data.isActive as boolean) ?? true,
 		shiftOn: (data.shiftOn as boolean) ?? false,
 		isArchived: (data.isArchived as boolean) ?? false,
+		mustChangePassword: (data.mustChangePassword as boolean) ?? false,
 		permissions: (data.permissions as Record<string, boolean>) ?? {},
 		photoUrl: (data.photoUrl as string) ?? "",
 	};
@@ -108,6 +109,7 @@ export async function signUp({ email, password, fullName, phoneNumber }: SignUpI
 		isActive: true,
 		shiftOn: false,
 		isArchived: false,
+		mustChangePassword: false,
 		permissions: DEFAULT_PERMISSIONS[role],
 		photoUrl: "",
 		createdAt: serverTimestamp(),

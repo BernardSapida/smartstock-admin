@@ -6,9 +6,9 @@ interface AuthCardProps {
 	children: ReactNode;
 	title: string;
 	subtitle: string;
-	footerText: string;
-	footerLinkText: string;
-	footerLinkTo: string;
+	footerText?: string;
+	footerLinkText?: string;
+	footerLinkTo?: string;
 }
 
 export default function AuthCard({
@@ -30,17 +30,19 @@ export default function AuthCard({
 
 				<div className="flex-1">{children}</div>
 
-				<div className="mt-8 pt-6 border-t border-app-brand/10 text-center">
-					<p className="text-sm text-foreground/60">
-						{footerText}{" "}
-						<Link
-							className="text-app-brand font-bold hover:underline underline-offset-4"
-							to={footerLinkTo}
-						>
-							{footerLinkText}
-						</Link>
-					</p>
-				</div>
+				{footerText && footerLinkText && footerLinkTo && (
+					<div className="mt-8 pt-6 border-t border-app-brand/10 text-center">
+						<p className="text-sm text-foreground/60">
+							{footerText}{" "}
+							<Link
+								className="text-app-brand font-bold hover:underline underline-offset-4"
+								to={footerLinkTo}
+							>
+								{footerLinkText}
+							</Link>
+						</p>
+					</div>
+				)}
 			</div>
 		</div>
 	);

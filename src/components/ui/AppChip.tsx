@@ -18,7 +18,7 @@ interface AppChipProps {
 export function AppChip({ label, color, variant, size, startContent, className }: AppChipProps) {
 	return (
 		<Chip
-			className={clsx("capitalize", className)}
+			className={clsx("w-max whitespace-nowrap capitalize", className)}
 			color={color}
 			size={size}
 			variant={variant}

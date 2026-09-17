@@ -4,6 +4,7 @@ import type { Timestamp } from "firebase/firestore";
 import { CalendarRange, ScrollText, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { AppSearchField } from "@/components/form/AppSearchField";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppPagination } from "@/components/ui/AppPagination";
@@ -98,16 +99,16 @@ function AuditLogsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center gap-3">
-				<ScrollText className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">Audit Logs</h1>
-					<p className="text-sm text-foreground/60">
+			<PageHeader
+				description={
+					<>
 						{filtered.length} event{filtered.length === 1 ? "" : "s"}
 						{isEmptyRange(range) ? " (most recent)" : ` from ${fmtDate(range.start)} to ${fmtDate(range.end)}`}
-					</p>
-				</div>
-			</div>
+					</>
+				}
+				icon={ScrollText}
+				title="Audit Logs"
+			/>
 
 			<div className="flex flex-col gap-3">
 				<div className="flex flex-col gap-3 sm:flex-row">

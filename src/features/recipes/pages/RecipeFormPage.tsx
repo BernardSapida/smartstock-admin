@@ -11,6 +11,7 @@ import { AppNumberField } from "@/components/form/AppNumberField";
 import { AppSelect } from "@/components/form/AppSelect";
 import { AppTextArea } from "@/components/form/AppTextArea";
 import { AppTextField } from "@/components/form/AppTextField";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor } from "@/features/inventory/firebase/inventory.writes";
 import { addRecipe, updateRecipe } from "@/features/recipes/firebase/recipes.firebase";
@@ -177,15 +178,11 @@ export function RecipeFormPage({ editing, products }: Props) {
 				</Button>
 			</div>
 
-			<div className="flex items-center gap-3">
-				<ChefHat className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">{editing ? `Edit: ${editing.name}` : "New Recipe"}</h1>
-					<p className="text-sm text-foreground/60">
-						{editing ? "Update the recipe details below." : "Fill in the details to create a new recipe."}
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				description={editing ? "Update the recipe details below." : "Fill in the details to create a new recipe."}
+				icon={ChefHat}
+				title={editing ? `Edit: ${editing.name}` : "New Recipe"}
+			/>
 
 			{/* ── form ───────────────────────────────────────────────────────── */}
 			<form onSubmit={onSubmit}>

@@ -24,7 +24,7 @@ export function StatusChip({ status, statusMap, size, variant, className }: Stat
 
 	return (
 		<Chip
-			className={clsx("capitalize", className)}
+			className={clsx("w-max whitespace-nowrap capitalize", className)}
 			color={entry?.color ?? "default"}
 			size={size}
 			variant={variant}

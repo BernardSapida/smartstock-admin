@@ -43,6 +43,10 @@ export function useLogin() {
 				navigate({ to: "/account-status" });
 				return;
 			}
+			if (profile.mustChangePassword) {
+				navigate({ to: "/change-password" });
+				return;
+			}
 
 			void logAction({
 				uid: profile.uid,
@@ -92,7 +96,7 @@ export function useRegister() {
 			notify.success({
 				title: `Welcome, ${profile.fullName || profile.email}! 🎉`,
 				description:
-					"Check your email to verify your address. Your account now needs admin approval before you can sign in.",
+					"Your account now needs admin approval before you can sign in.",
 			});
 			navigate({ to: "/account-status" });
 		} catch (error) {

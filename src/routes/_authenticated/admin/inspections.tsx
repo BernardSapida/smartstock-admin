@@ -15,6 +15,7 @@ import { CalendarRange, ClipboardCheck, Plus, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { notify } from "@/components/feedback";
 import { AppSearchField } from "@/components/form/AppSearchField";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppPagination } from "@/components/ui/AppPagination";
@@ -168,9 +169,7 @@ function InspectionsPage() {
 								? formatQuantity(i.disposedQuantity, unit)
 								: String(i.disposedQuantity)
 							: null;
-					return (
-						<span className="text-xs text-foreground/50">Disposed{amount ? ` (${amount})` : ""}</span>
-					);
+					return <span className="text-xs text-foreground/50">Disposed{amount ? ` (${amount})` : ""}</span>;
 				}
 				if (i.status === "pending") {
 					return (
@@ -206,27 +205,27 @@ function InspectionsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center justify-between gap-3">
-				<div className="flex items-center gap-3">
-					<ClipboardCheck className="h-7 w-7 text-app-brand" />
-					<div>
-						<h1 className="text-2xl font-bold text-foreground">Inspections</h1>
-						<p className="text-sm text-foreground/60">
-							{pendingCount} pending · {inspections.length - pendingCount} completed. Staff perform these in the mobile
-							app.
-						</p>
-					</div>
-				</div>
-				<Button
-					className="bg-app-brand"
-					onPress={() => setAssignOpen(true)}
-					size="sm"
-					variant="primary"
-				>
-					<Plus className="mr-1 h-4 w-4" />
-					Assign inspection
-				</Button>
-			</div>
+			<PageHeader
+				actions={
+					<Button
+						className="bg-app-brand"
+						onPress={() => setAssignOpen(true)}
+						size="sm"
+						variant="primary"
+					>
+						<Plus className="mr-1 h-4 w-4" />
+						Assign inspection
+					</Button>
+				}
+				description={
+					<>
+						{pendingCount} pending · {inspections.length - pendingCount} completed. Staff perform these in the mobile
+						app.
+					</>
+				}
+				icon={ClipboardCheck}
+				title="Inspections"
+			/>
 
 			<div className="flex flex-col gap-3 rounded-xl sm:flex-row">
 				<div className="flex-1 w-full">
@@ -695,9 +694,7 @@ function AssignModal({ isOpen, onClose, products, staff, actor }: AssignModalPro
 									<Calendar.NavButton slot="next" />
 								</Calendar.Header>
 								<Calendar.Grid>
-									<Calendar.GridHeader>
-										{(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
-									</Calendar.GridHeader>
+									<Calendar.GridHeader>{(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}</Calendar.GridHeader>
 									<Calendar.GridBody>{(date) => <Calendar.Cell date={date} />}</Calendar.GridBody>
 								</Calendar.Grid>
 							</Calendar>

@@ -43,7 +43,7 @@ export function AppPagination({
 				Showing {from}-{to} of {total} results
 			</Pagination.Summary>
 			{totalPages > 1 && (
-				<Pagination.Content>
+				<Pagination.Content className="flex-wrap justify-center">
 					<Pagination.Item>
 						<Pagination.Previous
 							isDisabled={page === 1}

@@ -20,6 +20,11 @@ export interface AppUser {
 	isActive: boolean;
 	shiftOn: boolean;
 	isArchived: boolean;
+	// True for accounts created with a shared/temporary password (e.g. the
+	// Firebase project migration) - forces a change-password screen on next
+	// login instead of the dashboard. False for normal self-service signups,
+	// who already picked their own password.
+	mustChangePassword: boolean;
 	permissions: Record<string, boolean>;
 	photoUrl?: string;
 	createdAt?: Date;

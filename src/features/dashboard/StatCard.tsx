@@ -25,10 +25,12 @@ export function StatCard({
 			className="flex items-center gap-4 rounded-2xl p-5"
 			variant="secondary"
 		>
-			<div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-app-brand/10 ${toneClass}`}>
+			<div
+				className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-app-brand/10 ${toneClass}`}
+			>
 				<Icon className="h-6 w-6" />
 			</div>
-			<div>
+			<div className="min-w-0 flex-1">
 				<p className="text-2xl font-bold text-foreground">{value}</p>
 				<p className="text-xs text-foreground/60">{label}</p>
 			</div>

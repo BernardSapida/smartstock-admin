@@ -4,27 +4,24 @@ rules_version = '2';
 // smartstock-admin and inventory-native - one Firebase project, one `users`
 // collection, both apps write to Firestore directly with the client SDK).
 //
-// SCOPE OF THIS FILE: this locks down the `users/{uid}` collection only. That
-// is the fix for the reported vulnerability ("anyone can sign up and become
-// an admin"): today, with no rules deployed, a signed-in client can write
-// `role: "admin"`, `status: "active"`, `isActive: true` etc. straight to
-// their own doc via the Firestore SDK, bypassing every app-level check.
+// SCOPE OF THIS FILE: `users/{uid}` gets tight, field-level rules - this is
+// the fix for the reported vulnerability ("anyone can sign up and become an
+// admin"): without it, a signed-in client can write `role: "admin"`,
+// `status: "active"`, `isActive: true` etc. straight to their own doc via
+// the Firestore SDK, bypassing every app-level check.
 //
 // This file makes that impossible: a user can create their own doc only as a
 // fresh `status: 'pending'` account, and can never change their own
 // role/status/isActive/isArchived/permissions afterwards - only an existing
 // active admin can.
 //
-// OUT OF SCOPE (follow-up): rules for every other collection (inventory,
-// recipes, production, forecast, inspections, notifications, auditLogs,
-// settings, etc.) are NOT included here. This repo has no firestore.rules
-// checked in today, so the live rules for those collections are unknown from
-// the code alone - locking them down needs the current rules (or a full
-// collection inventory) to avoid accidentally breaking access. Until that
-// follow-up ships, a pending/rejected account is blocked from becoming an
-// admin and from reading/writing OTHER users' docs, but is not yet blocked
-// at the rules layer from other collections (the app UI already blocks it,
-// per the account-status gate).
+// Every other top-level collection (inventory, products, recipes, etc.) gets
+// a coarse baseline below: any signed-in, approved & active user can read/
+// write. This is intentionally coarse, not per-field permission enforcement
+// (mapping each collection to the app's `permissions` map - inventoryAdjust,
+// staffManage, etc. - is a follow-up hardening pass) - but it's required for
+// the app to function at all, since Firestore denies by default for any path
+// with no matching rule.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -38,6 +35,15 @@ service cloud.firestore {
 
     function ownUserDoc() {
       return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Any signed-in user whose OWN account has been approved and isn't
+    // deactivated/archived - the baseline gate for app data (any role).
+    function isActiveUser() {
+      return isSignedIn()
+        && ownUserDoc().status == 'active'
+        && ownUserDoc().isActive == true
+        && ownUserDoc().isArchived != true;
     }
 
     // An existing, approved, active admin - the only party allowed to change
@@ -78,6 +84,15 @@ service cloud.firestore {
         );
 
       allow delete: if isActiveAdmin();
+    }
+
+    // Approved/active user (any role) can read/write everything else. The
+    // `collection != 'users'` guard is load-bearing: without it, this would
+    // also match `users/{uid}` and let any active user overwrite ANY other
+    // user's role/status via this broader rule, defeating the tight checks
+    // above (Firestore allows a request if ANY matching rule allows it).
+    match /{collection}/{document=**} {
+      allow read, write: if collection != 'users' && isSignedIn() && isActiveUser();
     }
   }
 }

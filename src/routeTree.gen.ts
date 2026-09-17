@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
 import { Route as AccountStatusRouteImport } from './routes/account-status'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -48,6 +49,11 @@ const SignUpRoute = SignUpRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AccountStatusRoute = AccountStatusRouteImport.update({
@@ -178,6 +184,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/account-status': typeof AccountStatusRoute
+  '/change-password': typeof ChangePasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -204,6 +211,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/account-status': typeof AccountStatusRoute
+  '/change-password': typeof ChangePasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -231,6 +239,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
   '/account-status': typeof AccountStatusRoute
+  '/change-password': typeof ChangePasswordRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -259,6 +268,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/account-status'
+    | '/change-password'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -285,6 +295,7 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/account-status'
+    | '/change-password'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -311,6 +322,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/account-status'
+    | '/change-password'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -339,6 +351,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
   AccountStatusRoute: typeof AccountStatusRoute
+  ChangePasswordRoute: typeof ChangePasswordRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/account-status': {
@@ -586,6 +606,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
   AccountStatusRoute: AccountStatusRoute,
+  ChangePasswordRoute: ChangePasswordRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   UnauthorizedRoute: UnauthorizedRoute,

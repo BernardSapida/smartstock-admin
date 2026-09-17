@@ -9,6 +9,7 @@ import { notify } from "@/components/feedback";
 import { AppNumberField } from "@/components/form/AppNumberField";
 import { AppSearchField } from "@/components/form/AppSearchField";
 import { AppSwitch } from "@/components/form/AppSwitch";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppPagination } from "@/components/ui/AppPagination";
@@ -37,10 +38,10 @@ function SettingsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center gap-3">
-				<SettingsIcon className="h-7 w-7 text-app-brand" />
-				<h1 className="text-2xl font-bold text-foreground">Settings</h1>
-			</div>
+			<PageHeader
+				icon={SettingsIcon}
+				title="Settings"
+			/>
 
 			<AppTabs
 				items={[
@@ -91,9 +92,14 @@ function ToggleRow({
 				isSelected={isSelected}
 				onChange={onChange}
 			>
-				<Switch.Control>
-					<Switch.Thumb />
-				</Switch.Control>
+				{/* Switch.Control/Thumb are purely visual spans - Switch.Content is the
+				    actual clickable element (wraps react-aria's SwitchButton/input).
+				    Without it, the switch renders but never responds to clicks. */}
+				<Switch.Content>
+					<Switch.Control>
+						<Switch.Thumb />
+					</Switch.Control>
+				</Switch.Content>
 			</Switch>
 		</div>
 	);

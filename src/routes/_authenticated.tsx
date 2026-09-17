@@ -38,16 +38,19 @@ function AppLayout() {
 	// user whose account isn't approved/active yet (pending, rejected, or
 	// deactivated after the fact) never sees the dashboard - only /account-status.
 	const isApproved = !!profile && profile.status === "active" && profile.isActive && !profile.isArchived;
+	const mustChangePassword = isApproved && !!profile?.mustChangePassword;
 	useEffect(() => {
 		if (loading) return;
 		if (!isAuthenticated) {
 			navigate({ to: "/sign-in" });
 		} else if (!isApproved) {
 			navigate({ to: "/account-status" });
+		} else if (mustChangePassword) {
+			navigate({ to: "/change-password" });
 		}
-	}, [loading, isAuthenticated, isApproved, navigate]);
+	}, [loading, isAuthenticated, isApproved, mustChangePassword, navigate]);
 
-	if (loading || !profile || !isApproved) {
+	if (loading || !profile || !isApproved || mustChangePassword) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-app-base">
 				<AppSpinner />

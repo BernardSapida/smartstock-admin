@@ -1,6 +1,7 @@
 import { Button, Surface } from "@heroui/react";
 import type { Timestamp } from "firebase/firestore";
 import { Bell, CheckCheck } from "lucide-react";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import { markAllRead, markRead } from "./notifications";
@@ -41,25 +42,23 @@ export function NotificationsView() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center justify-between gap-3">
-				<div className="flex items-center gap-3">
-					<Bell className="h-7 w-7 text-app-brand" />
-					<div>
-						<h1 className="text-2xl font-bold text-foreground">Notifications</h1>
-						<p className="text-sm text-foreground/60">{unreadCount} unread</p>
-					</div>
-				</div>
-				{unreadCount > 0 && (
-					<Button
-						onPress={() => markAllRead(notifications)}
-						size="sm"
-						variant="ghost"
-					>
-						<CheckCheck className="mr-1 h-4 w-4" />
-						Mark all read
-					</Button>
-				)}
-			</div>
+			<PageHeader
+				actions={
+					unreadCount > 0 && (
+						<Button
+							onPress={() => markAllRead(notifications)}
+							size="sm"
+							variant="ghost"
+						>
+							<CheckCheck className="mr-1 h-4 w-4" />
+							Mark all read
+						</Button>
+					)
+				}
+				description={`${unreadCount} unread`}
+				icon={Bell}
+				title="Notifications"
+			/>
 
 			{loading ? (
 				<p className="text-sm text-foreground/60">Loading…</p>
@@ -69,13 +68,13 @@ export function NotificationsView() {
 				<div className="space-y-2">
 					{notifications.map((n) => (
 						<Surface
-							className={`flex items-start justify-between gap-3 rounded-2xl p-4 ${n.isRead ? "opacity-70" : ""}`}
+							className={`flex flex-wrap items-start justify-between gap-3 rounded-2xl p-4 ${n.isRead ? "opacity-70" : ""}`}
 							key={n.id}
 							variant="secondary"
 						>
-							<div className="flex-1">
-								<div className="flex items-center gap-2">
-									{!n.isRead && <span className="h-2 w-2 rounded-full bg-app-brand" />}
+							<div className="min-w-0 flex-1">
+								<div className="flex flex-wrap items-center gap-2">
+									{!n.isRead && <span className="h-2 w-2 shrink-0 rounded-full bg-app-brand" />}
 									<p className="font-semibold text-foreground">{n.title}</p>
 									<AppChip
 										color={colorForType(n.type)}
@@ -89,6 +88,7 @@ export function NotificationsView() {
 							</div>
 							{!n.isRead && (
 								<Button
+									className="shrink-0"
 									onPress={() => markRead(n.id)}
 									size="sm"
 									variant="ghost"

@@ -3,6 +3,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { BookOpen, ChefHat, Plus, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { notify } from "@/components/feedback";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppModal } from "@/components/ui/AppModal";
 import { AppPagination } from "@/components/ui/AppPagination";
@@ -108,24 +109,20 @@ function AdminRecipesPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center justify-between gap-3">
-				<div className="flex items-center gap-3">
-					<ChefHat className="h-7 w-7 text-app-brand" />
-					<div>
-						<h1 className="text-2xl font-bold text-foreground">Recipes</h1>
-						<p className="text-sm text-foreground/60">
-							{recipes.length} recipes · “Can cook” is limited by the scarcest ingredient.
-						</p>
-					</div>
-				</div>
-				<Button
-					onPress={() => navigate({ to: "/admin/recipes/add" })}
-					variant="primary"
-				>
-					<Plus className="mr-1 h-4 w-4" />
-					New recipe
-				</Button>
-			</div>
+			<PageHeader
+				actions={
+					<Button
+						onPress={() => navigate({ to: "/admin/recipes/add" })}
+						variant="primary"
+					>
+						<Plus className="mr-1 h-4 w-4" />
+						New recipe
+					</Button>
+				}
+				description={`${recipes.length} recipes · “Can cook” is limited by the scarcest ingredient.`}
+				icon={ChefHat}
+				title="Recipes"
+			/>
 
 			<div className="space-y-4">
 				<TableFilterBar

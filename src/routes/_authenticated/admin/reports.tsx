@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type { Timestamp } from "firebase/firestore";
 import { AlertTriangle, Download, FileBarChart, XCircle } from "lucide-react";
 import { useMemo, useState } from "react";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
@@ -454,25 +455,21 @@ function ReportsPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center justify-between gap-3">
-				<div className="flex items-center gap-3">
-					<FileBarChart className="h-7 w-7 text-app-brand" />
-					<div>
-						<h1 className="text-2xl font-bold text-foreground">Reports</h1>
-						<p className="text-sm text-foreground/60">
-							Forecasts use available data; production-based forecasts improve as more is recorded.
-						</p>
-					</div>
-				</div>
-				<Button
-					onPress={exportCurrent}
-					size="sm"
-					variant="ghost"
-				>
-					<Download className="mr-1 h-4 w-4" />
-					Export CSV
-				</Button>
-			</div>
+			<PageHeader
+				actions={
+					<Button
+						onPress={exportCurrent}
+						size="sm"
+						variant="ghost"
+					>
+						<Download className="mr-1 h-4 w-4" />
+						Export CSV
+					</Button>
+				}
+				description="Forecasts use available data; production-based forecasts improve as more is recorded."
+				icon={FileBarChart}
+				title="Reports"
+			/>
 
 			{DATE_SCOPED[tab] ? (
 				<div className="rounded-xl border border-foreground/10 p-4">

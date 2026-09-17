@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TrendingDown } from "lucide-react";
 import { useMemo } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { AppChip } from "@/components/ui/AppChip";
 import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
@@ -191,16 +192,11 @@ function ForecastPage() {
 
 	return (
 		<div className="space-y-6">
-			<div className="flex items-center gap-3">
-				<TrendingDown className="h-7 w-7 text-app-brand" />
-				<div>
-					<h1 className="text-2xl font-bold text-foreground">Forecast</h1>
-					<p className="text-sm text-foreground/60">
-						Based on {WINDOW_DAYS} days of production history - how long current stock will last at the current
-						consumption rate.
-					</p>
-				</div>
-			</div>
+			<PageHeader
+				description={`Based on ${WINDOW_DAYS} days of production history - how long current stock will last at the current consumption rate.`}
+				icon={TrendingDown}
+				title="Forecast"
+			/>
 
 			<div className="flex flex-wrap gap-3">
 				<AppChip
