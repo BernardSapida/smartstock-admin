@@ -1,8 +1,8 @@
-import { Button, Input, Surface, Switch } from "@heroui/react";
+import { Button, Input, ListBox, Select, Surface, Switch } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Settings as SettingsIcon, Trash2 } from "lucide-react";
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { notify } from "@/components/feedback";
@@ -17,7 +17,7 @@ import { AppTabs } from "@/components/ui/AppTabs";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import type { Actor } from "@/features/inventory/firebase/inventory.writes";
 import { type SpoonDefault, saveSystemConfig, useSystemConfig } from "@/features/settings/settings";
-import { updateUserActive, updateUserRole, useUsers } from "@/features/users/users";
+import { approveUser, rejectUser, updateUserActive, updateUserRole, useUsers } from "@/features/users/users";
 import { usePagination } from "@/hooks/use-pagination";
 import { BUILTIN_SPOON_DEFAULTS, SPOON_UNITS, TBSP_ML, unitInfo } from "@/lib/units";
 import type { AppUser, UserRole } from "@/types/user";
@@ -284,9 +284,9 @@ function ConversionsTab() {
 				<div>
 					<h2 className="text-base font-semibold text-foreground">Spoon measurements</h2>
 					<p className="text-sm text-foreground/60">
-						Weight of one level tablespoon per ingredient, used to convert tbsp / tsp / cup in recipes into
-						stock. Matched on the product name; a product with its own tablespoon weight set overrides this.
-						Teaspoon and cup are worked out from the tablespoon ({SPOON_UNITS.join(" / ")}).
+						Weight of one level tablespoon per ingredient, used to convert tbsp / tsp / cup in recipes into stock.
+						Matched on the product name; a product with its own tablespoon weight set overrides this. Teaspoon and cup
+						are worked out from the tablespoon ({SPOON_UNITS.join(" / ")}).
 					</p>
 				</div>
 
@@ -394,11 +394,82 @@ const ROLE_STATUS_MAP = {
 	staff: { label: "Staff", color: "default" as const },
 };
 
+// Derived display status: `status` (pending/active/rejected) takes priority -
+// "Active"/"Inactive" only distinguish within an already-approved account.
+type DisplayStatus = "pending" | "rejected" | "active" | "inactive";
+
+function displayStatus(u: AppUser): DisplayStatus {
+	if (u.status === "pending") return "pending";
+	if (u.status === "rejected") return "rejected";
+	return u.isActive ? "active" : "inactive";
+}
+
+const STATUS_DISPLAY_MAP: Record<
+	DisplayStatus,
+	{ label: string; color: "warning" | "danger" | "success" | "default" }
+> = {
+	pending: { label: "Pending", color: "warning" },
+	rejected: { label: "Rejected", color: "danger" },
+	active: { label: "Active", color: "success" },
+	inactive: { label: "Inactive", color: "danger" },
+};
+
+const ROLE_FILTER_OPTIONS = [
+	{ value: "all", label: "All roles" },
+	{ value: "admin", label: "Admin" },
+	{ value: "staff", label: "Staff" },
+];
+
+const STATUS_FILTER_OPTIONS = [
+	{ value: "all", label: "All statuses" },
+	{ value: "pending", label: "Pending" },
+	{ value: "active", label: "Active" },
+	{ value: "inactive", label: "Inactive" },
+	{ value: "rejected", label: "Rejected" },
+];
+
 function UsersTab({ actor, selfUid }: { actor: Actor; selfUid: string }) {
 	const { users, loading } = useUsers();
-	const rows = users.map((u) => ({ ...u, id: u.uid }));
-	const { page, setPage, rowsPerPage, pageRows } = usePagination(rows);
 	const [editing, setEditing] = useState<AppUser | null>(null);
+	const [roleFilter, setRoleFilter] = useState("all");
+	const [statusFilter, setStatusFilter] = useState("all");
+	const [busyUid, setBusyUid] = useState<string | null>(null);
+
+	const filtered = useMemo(
+		() =>
+			users.filter(
+				(u) =>
+					(roleFilter === "all" || u.role === roleFilter) &&
+					(statusFilter === "all" || displayStatus(u) === statusFilter),
+			),
+		[users, roleFilter, statusFilter],
+	);
+	const rows = filtered.map((u) => ({ ...u, id: u.uid }));
+	const { page, setPage, rowsPerPage, pageRows } = usePagination(rows);
+
+	const approve = async (u: AppUser) => {
+		setBusyUid(u.uid);
+		try {
+			await approveUser(u.uid, actor);
+			notify.success({ title: "User approved", description: `${u.fullName || u.email} can now sign in.` });
+		} catch (e) {
+			notify.danger({ title: "Approve failed", description: e instanceof Error ? e.message : "Please try again." });
+		} finally {
+			setBusyUid(null);
+		}
+	};
+
+	const reject = async (u: AppUser) => {
+		setBusyUid(u.uid);
+		try {
+			await rejectUser(u.uid, actor);
+			notify.success({ title: "User rejected", description: `${u.fullName || u.email} has been rejected.` });
+		} catch (e) {
+			notify.danger({ title: "Reject failed", description: e instanceof Error ? e.message : "Please try again." });
+		} finally {
+			setBusyUid(null);
+		}
+	};
 
 	const columns = [
 		{ key: "name", label: "Name", render: (u: AppUser) => <span className="font-semibold">{u.fullName || "-"}</span> },
@@ -416,37 +487,72 @@ function UsersTab({ actor, selfUid }: { actor: Actor; selfUid: string }) {
 			),
 		},
 		{
-			key: "active",
+			key: "status",
 			label: "Status",
-			render: (u: AppUser) => (
-				<AppChip
-					color={u.isActive ? "success" : "danger"}
-					label={u.isActive ? "Active" : "Inactive"}
-					size="sm"
-					variant="soft"
-				/>
-			),
+			render: (u: AppUser) => {
+				const s = STATUS_DISPLAY_MAP[displayStatus(u)];
+				return (
+					<AppChip
+						color={s.color}
+						label={s.label}
+						size="sm"
+						variant="soft"
+					/>
+				);
+			},
 		},
 		{
 			key: "manage",
 			label: "",
-			render: (u: AppUser) => (
-				<Button
-					onPress={() => setEditing(u)}
-					size="sm"
-					variant="ghost"
-				>
-					Manage
-				</Button>
-			),
+			render: (u: AppUser) =>
+				displayStatus(u) === "pending" ? (
+					<div className="flex justify-end gap-2">
+						<Button
+							isDisabled={busyUid === u.uid}
+							onPress={() => reject(u)}
+							size="sm"
+							variant="tertiary"
+						>
+							Reject
+						</Button>
+						<Button
+							isPending={busyUid === u.uid}
+							onPress={() => approve(u)}
+							size="sm"
+							variant="primary"
+						>
+							Approve
+						</Button>
+					</div>
+				) : (
+					<Button
+						onPress={() => setEditing(u)}
+						size="sm"
+						variant="ghost"
+					>
+						Manage
+					</Button>
+				),
 		},
 	];
 
 	return (
-		<div>
+		<div className="space-y-4">
+			<UsersFilterBar
+				onRoleChange={(v) => {
+					setRoleFilter(v);
+					setPage(1);
+				}}
+				onStatusChange={(v) => {
+					setStatusFilter(v);
+					setPage(1);
+				}}
+				role={roleFilter}
+				status={statusFilter}
+			/>
 			<AppTable
 				columns={columns}
-				emptyContent="No users."
+				emptyContent="No users match these filters."
 				isLoading={loading}
 				rows={pageRows}
 			/>
@@ -462,6 +568,81 @@ function UsersTab({ actor, selfUid }: { actor: Actor; selfUid: string }) {
 				onClose={() => setEditing(null)}
 				user={editing}
 			/>
+		</div>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/* Role / Status filter row for the Users table                       */
+/* ------------------------------------------------------------------ */
+
+function UsersFilterBar({
+	role,
+	onRoleChange,
+	status,
+	onStatusChange,
+}: {
+	role: string;
+	onRoleChange: (value: string) => void;
+	status: string;
+	onStatusChange: (value: string) => void;
+}) {
+	return (
+		<div className="flex flex-col gap-3 sm:flex-row">
+			<div className="sm:w-48">
+				<Select
+					onChange={(val) => onRoleChange(val ? String(val) : "all")}
+					selectionMode="single"
+					value={role}
+					variant="secondary"
+				>
+					<Select.Trigger>
+						<Select.Value />
+						<Select.Indicator />
+					</Select.Trigger>
+					<Select.Popover>
+						<ListBox>
+							{ROLE_FILTER_OPTIONS.map((o) => (
+								<ListBox.Item
+									id={o.value}
+									key={o.value}
+									textValue={o.label}
+								>
+									{o.label}
+									<ListBox.ItemIndicator />
+								</ListBox.Item>
+							))}
+						</ListBox>
+					</Select.Popover>
+				</Select>
+			</div>
+			<div className="sm:w-48">
+				<Select
+					onChange={(val) => onStatusChange(val ? String(val) : "all")}
+					selectionMode="single"
+					value={status}
+					variant="secondary"
+				>
+					<Select.Trigger>
+						<Select.Value />
+						<Select.Indicator />
+					</Select.Trigger>
+					<Select.Popover>
+						<ListBox>
+							{STATUS_FILTER_OPTIONS.map((o) => (
+								<ListBox.Item
+									id={o.value}
+									key={o.value}
+									textValue={o.label}
+								>
+									{o.label}
+									<ListBox.ItemIndicator />
+								</ListBox.Item>
+							))}
+						</ListBox>
+					</Select.Popover>
+				</Select>
+			</div>
 		</div>
 	);
 }

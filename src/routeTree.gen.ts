@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as SignUpRouteImport } from './routes/sign-up'
 import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as AccountStatusRouteImport } from './routes/account-status'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
@@ -47,6 +48,11 @@ const SignUpRoute = SignUpRouteImport.update({
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountStatusRoute = AccountStatusRouteImport.update({
+  id: '/account-status',
+  path: '/account-status',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -171,6 +177,7 @@ const AuthenticatedAdminInventoryProductIdEditRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account-status': typeof AccountStatusRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account-status': typeof AccountStatusRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -222,6 +230,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/about': typeof AboutRoute
+  '/account-status': typeof AccountStatusRoute
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthorized': typeof UnauthorizedRoute
@@ -249,6 +258,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/account-status'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -274,6 +284,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/account-status'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -299,6 +310,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/account-status'
     | '/sign-in'
     | '/sign-up'
     | '/unauthorized'
@@ -326,6 +338,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AccountStatusRoute: typeof AccountStatusRoute
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   UnauthorizedRoute: typeof UnauthorizedRoute
@@ -352,6 +365,13 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account-status': {
+      id: '/account-status'
+      path: '/account-status'
+      fullPath: '/account-status'
+      preLoaderRoute: typeof AccountStatusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -565,6 +585,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AboutRoute: AboutRoute,
+  AccountStatusRoute: AccountStatusRoute,
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   UnauthorizedRoute: UnauthorizedRoute,

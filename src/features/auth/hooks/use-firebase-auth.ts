@@ -8,7 +8,7 @@ import { getDefaultRoute } from "@/config/navigation.config";
 import { logClientError } from "@/errors/logger";
 import { logAction } from "@/lib/audit";
 import { useAuth } from "../context/AuthProvider";
-import { signIn, type SignUpInput, signUp } from "../firebase/auth.firebase";
+import { type SignUpInput, signIn, signUp } from "../firebase/auth.firebase";
 
 /** Maps Firebase Auth error codes to friendly, user-facing messages. */
 function authErrorMessage(error: unknown): string {
@@ -37,6 +37,13 @@ export function useLogin() {
 		try {
 			const profile = await signIn(email, password);
 			setProfile(profile);
+
+			const isApproved = profile.status === "active" && profile.isActive && !profile.isArchived;
+			if (!isApproved) {
+				navigate({ to: "/account-status" });
+				return;
+			}
+
 			void logAction({
 				uid: profile.uid,
 				user: profile.fullName || profile.email,
@@ -84,9 +91,10 @@ export function useRegister() {
 			});
 			notify.success({
 				title: `Welcome, ${profile.fullName || profile.email}! 🎉`,
-				description: "Your admin account has been created.",
+				description:
+					"Check your email to verify your address. Your account now needs admin approval before you can sign in.",
 			});
-			navigate({ to: getDefaultRoute(profile.role) });
+			navigate({ to: "/account-status" });
 		} catch (error) {
 			logClientError(error, "FIREBASE_REGISTER");
 			notify.danger({

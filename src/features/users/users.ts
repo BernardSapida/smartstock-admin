@@ -15,6 +15,7 @@ function toUser(uid: string, d: Record<string, unknown>): AppUser {
 		email: (d.email as string) ?? "",
 		fullName: (d.fullName as string) ?? "",
 		role: ((d.role as string)?.toLowerCase() === "admin" ? "admin" : "staff") as UserRole,
+		status: ((d.status as string) ?? "active") as AppUser["status"],
 		phoneNumber: (d.phoneNumber as string) ?? "",
 		unitPreference: (d.unitPreference as string) ?? "",
 		isActive: (d.isActive as boolean) ?? true,
@@ -59,6 +60,30 @@ export async function updateUserActive(uid: string, isActive: boolean, actor: Ac
 		action: "SETTING",
 		module: "Users",
 		description: `${isActive ? "Activated" : "Deactivated"} ${uid}`,
+	});
+}
+
+export async function approveUser(uid: string, actor: Actor): Promise<void> {
+	await updateDoc(doc(db, "users", uid), { status: "active", isActive: true, updatedAt: serverTimestamp() });
+	void logAction({
+		uid: actor.uid,
+		user: actor.name,
+		role: actor.role,
+		action: "SETTING",
+		module: "Users",
+		description: `Approved signup for ${uid}`,
+	});
+}
+
+export async function rejectUser(uid: string, actor: Actor): Promise<void> {
+	await updateDoc(doc(db, "users", uid), { status: "rejected", updatedAt: serverTimestamp() });
+	void logAction({
+		uid: actor.uid,
+		user: actor.name,
+		role: actor.role,
+		action: "SETTING",
+		module: "Users",
+		description: `Rejected signup for ${uid}`,
 	});
 }
 

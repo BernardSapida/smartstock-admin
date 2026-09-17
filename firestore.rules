@@ -1,0 +1,83 @@
+rules_version = '2';
+
+// Firestore Security Rules for the SmartStock project (shared by
+// smartstock-admin and inventory-native - one Firebase project, one `users`
+// collection, both apps write to Firestore directly with the client SDK).
+//
+// SCOPE OF THIS FILE: this locks down the `users/{uid}` collection only. That
+// is the fix for the reported vulnerability ("anyone can sign up and become
+// an admin"): today, with no rules deployed, a signed-in client can write
+// `role: "admin"`, `status: "active"`, `isActive: true` etc. straight to
+// their own doc via the Firestore SDK, bypassing every app-level check.
+//
+// This file makes that impossible: a user can create their own doc only as a
+// fresh `status: 'pending'` account, and can never change their own
+// role/status/isActive/isArchived/permissions afterwards - only an existing
+// active admin can.
+//
+// OUT OF SCOPE (follow-up): rules for every other collection (inventory,
+// recipes, production, forecast, inspections, notifications, auditLogs,
+// settings, etc.) are NOT included here. This repo has no firestore.rules
+// checked in today, so the live rules for those collections are unknown from
+// the code alone - locking them down needs the current rules (or a full
+// collection inventory) to avoid accidentally breaking access. Until that
+// follow-up ships, a pending/rejected account is blocked from becoming an
+// admin and from reading/writing OTHER users' docs, but is not yet blocked
+// at the rules layer from other collections (the app UI already blocks it,
+// per the account-status gate).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwnUid(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function ownUserDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // An existing, approved, active admin - the only party allowed to change
+    // another user's role/status/access.
+    function isActiveAdmin() {
+      return isSignedIn()
+        && ownUserDoc().role == 'admin'
+        && ownUserDoc().status == 'active'
+        && ownUserDoc().isActive == true
+        && ownUserDoc().isArchived != true;
+    }
+
+    match /users/{uid} {
+      // Read your own profile, or any profile if you're an active admin
+      // (Settings > Users needs to list everyone).
+      allow read: if isOwnUid(uid) || isActiveAdmin();
+
+      // Self-registration: you can only ever create YOUR OWN doc, and only as
+      // a fresh pending account - never pre-approved, never someone else's uid.
+      allow create: if isOwnUid(uid)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.role in ['admin', 'staff']
+        && request.resource.data.isActive == true
+        && request.resource.data.isArchived == false;
+
+      // Admins can change anything (approve/reject/promote/deactivate/archive).
+      // A user editing their OWN doc (e.g. saving their name/phone from the
+      // profile page) can never move role/status/isActive/isArchived/
+      // permissions themselves - those fields must be unchanged in the update.
+      allow update: if isActiveAdmin()
+        || (
+          isOwnUid(uid)
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.status == resource.data.status
+          && request.resource.data.isActive == resource.data.isActive
+          && request.resource.data.isArchived == resource.data.isArchived
+          && request.resource.data.permissions == resource.data.permissions
+        );
+
+      allow delete: if isActiveAdmin();
+    }
+  }
+}

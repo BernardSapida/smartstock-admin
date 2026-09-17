@@ -34,14 +34,20 @@ function AppLayout() {
 	// recipe math on every screen resolves the same densities as mobile.
 	useSyncSpoonDefaults();
 
-	// Client-side guard: Firebase auth state resolves on the client.
+	// Client-side guard: Firebase auth state resolves on the client. A signed-in
+	// user whose account isn't approved/active yet (pending, rejected, or
+	// deactivated after the fact) never sees the dashboard - only /account-status.
+	const isApproved = !!profile && profile.status === "active" && profile.isActive && !profile.isArchived;
 	useEffect(() => {
-		if (!loading && !isAuthenticated) {
+		if (loading) return;
+		if (!isAuthenticated) {
 			navigate({ to: "/sign-in" });
+		} else if (!isApproved) {
+			navigate({ to: "/account-status" });
 		}
-	}, [loading, isAuthenticated, navigate]);
+	}, [loading, isAuthenticated, isApproved, navigate]);
 
-	if (loading || !profile) {
+	if (loading || !profile || !isApproved) {
 		return (
 			<div className="min-h-screen flex items-center justify-center bg-app-base">
 				<AppSpinner />

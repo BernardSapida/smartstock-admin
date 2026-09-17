@@ -32,6 +32,7 @@ export type NotificationType =
 	| "inspection_alert"
 	| "staff_login"
 	| "staff_logout"
+	| "signup_pending"
 	| "system"
 	| "general";
 
@@ -49,7 +50,7 @@ export interface AppNotification {
 }
 
 function timeOf(data: Record<string, unknown>): Timestamp | null {
-	return ((data.timestamp as Timestamp) ?? (data.createdAt as Timestamp)) ?? null;
+	return (data.timestamp as Timestamp) ?? (data.createdAt as Timestamp) ?? null;
 }
 
 export function watchNotifications(role: UserRole, cb: (n: AppNotification[]) => void): () => void {
