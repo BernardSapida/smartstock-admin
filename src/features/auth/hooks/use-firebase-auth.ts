@@ -9,23 +9,7 @@ import { logClientError } from "@/errors/logger";
 import { logAction } from "@/lib/audit";
 import { useAuth } from "../context/AuthProvider";
 import { type SignUpInput, signIn, signUp } from "../firebase/auth.firebase";
-
-/** Maps Firebase Auth error codes to friendly, user-facing messages. */
-function authErrorMessage(error: unknown): string {
-	const code = (error as { code?: string })?.code ?? "";
-	switch (code) {
-		case "auth/email-already-in-use":
-			return "An account with this email already exists.";
-		case "auth/invalid-email":
-			return "Please enter a valid email address.";
-		case "auth/weak-password":
-			return "Password is too weak. Use at least 6 characters.";
-		case "auth/operation-not-allowed":
-			return "Email/password sign-up is disabled for this project.";
-		default:
-			return error instanceof Error ? error.message : "Something went wrong. Please try again.";
-	}
-}
+import { authErrorMessage } from "../utils/auth-error-message";
 
 export function useLogin() {
 	const navigate = useNavigate();
@@ -65,7 +49,7 @@ export function useLogin() {
 			logClientError(error, "FIREBASE_LOGIN");
 			notify.danger({
 				title: "Login failed",
-				description: error instanceof Error ? error.message : "Unable to sign in.",
+				description: authErrorMessage(error),
 			});
 		} finally {
 			setIsPending(false);
@@ -95,8 +79,7 @@ export function useRegister() {
 			});
 			notify.success({
 				title: `Welcome, ${profile.fullName || profile.email}! 🎉`,
-				description:
-					"Your account now needs admin approval before you can sign in.",
+				description: "Your account now needs admin approval before you can sign in.",
 			});
 			navigate({ to: "/account-status" });
 		} catch (error) {

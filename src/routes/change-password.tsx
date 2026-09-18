@@ -11,6 +11,7 @@ import { logClientError } from "@/errors/logger";
 import AuthCard from "@/features/auth/components/AuthCard";
 import { useAuth } from "@/features/auth/context/AuthProvider";
 import { useLogout } from "@/features/auth/hooks/use-firebase-auth";
+import { authErrorMessage } from "@/features/auth/utils/auth-error-message";
 import {
 	type ChangePasswordInput,
 	ChangePasswordSchema,
@@ -56,9 +57,7 @@ function ChangePasswordPage() {
 				description:
 					code === "auth/invalid-credential" || code === "auth/wrong-password"
 						? "Your current password is incorrect."
-						: error instanceof Error
-							? error.message
-							: "Please try again.",
+						: authErrorMessage(error),
 			});
 		}
 	});
