@@ -1,4 +1,4 @@
-import { Button, Input, ListBox, Select, Surface, Switch } from "@heroui/react";
+import { Button, Description, Input, Label, ListBox, Select, Surface, Switch, TextField } from "@heroui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createFileRoute } from "@tanstack/react-router";
 import { Plus, Settings as SettingsIcon, Trash2 } from "lucide-react";
@@ -6,6 +6,7 @@ import { type ReactNode, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { notify } from "@/components/feedback";
+import { AppInputGroup } from "@/components/form/AppInputGroup";
 import { AppNumberField } from "@/components/form/AppNumberField";
 import { AppSearchField } from "@/components/form/AppSearchField";
 import { AppSwitch } from "@/components/form/AppSwitch";
@@ -16,9 +17,22 @@ import { AppPagination } from "@/components/ui/AppPagination";
 import { AppTable } from "@/components/ui/AppTable";
 import { AppTabs } from "@/components/ui/AppTabs";
 import { useAuth } from "@/features/auth/context/AuthProvider";
+import { authErrorMessage } from "@/features/auth/utils/auth-error-message";
+import {
+	type ChangePasswordInput,
+	ChangePasswordSchema,
+} from "@/features/auth/validations/schema/change-password.schema";
 import type { Actor } from "@/features/inventory/firebase/inventory.writes";
+import { changePassword } from "@/features/profile/password";
 import { type SpoonDefault, saveSystemConfig, useSystemConfig } from "@/features/settings/settings";
-import { approveUser, rejectUser, updateUserActive, updateUserRole, useUsers } from "@/features/users/users";
+import {
+	approveUser,
+	rejectUser,
+	updateOwnProfile,
+	updateUserActive,
+	updateUserRole,
+	useUsers,
+} from "@/features/users/users";
 import { usePagination } from "@/hooks/use-pagination";
 import { BUILTIN_SPOON_DEFAULTS, SPOON_UNITS, TBSP_ML, unitInfo } from "@/lib/units";
 import type { AppUser, UserRole } from "@/types/user";
@@ -47,6 +61,7 @@ function SettingsPage() {
 				items={[
 					{ key: "preferences", label: "Preferences", content: <PreferencesTab /> },
 					{ key: "conversions", label: "Conversions", content: <ConversionsTab /> },
+					{ key: "account", label: "Account", content: <AccountTab /> },
 					{
 						key: "users",
 						label: "Users",
@@ -387,6 +402,182 @@ function ConversionsTab() {
 					</Button>
 				</div>
 			</div>
+		</Surface>
+	);
+}
+
+/* ------------------------------------------------------------------ */
+/* Account tab (own profile info + password)                          */
+/* ------------------------------------------------------------------ */
+
+const profileInfoSchema = z.object({
+	fullName: z.string().min(1, "Full name is required"),
+	phoneNumber: z.string(),
+});
+type ProfileInfoInput = z.infer<typeof profileInfoSchema>;
+
+function AccountTab() {
+	return (
+		<div className="space-y-6">
+			<ProfileInfoCard />
+			<PasswordCard />
+		</div>
+	);
+}
+
+function ProfileInfoCard() {
+	const { profile, setProfile } = useAuth();
+
+	const { control, handleSubmit, formState } = useForm<ProfileInfoInput>({
+		resolver: zodResolver(profileInfoSchema),
+		mode: "onBlur",
+		reValidateMode: "onChange",
+		values: profile ? { fullName: profile.fullName, phoneNumber: profile.phoneNumber } : undefined,
+	});
+
+	const save = handleSubmit(async (data) => {
+		if (!profile) return;
+		try {
+			await updateOwnProfile(profile.uid, data);
+			setProfile({ ...profile, ...data });
+			notify.success({ title: "Profile updated", description: "Your changes have been saved." });
+		} catch (e) {
+			notify.danger({
+				title: "Save failed",
+				description: e instanceof Error ? e.message : "Could not save your changes. Please try again.",
+			});
+		}
+	});
+
+	return (
+		<Surface
+			className="rounded-2xl p-6"
+			variant="secondary"
+		>
+			<form
+				className="space-y-6"
+				onSubmit={save}
+			>
+				<Section
+					subtitle="Your name and contact details."
+					title="Profile"
+				>
+					<div className="space-y-4">
+						<AppInputGroup
+							control={control}
+							isRequired
+							label="Full name"
+							name="fullName"
+							placeholder="Your full name"
+						/>
+						<AppInputGroup
+							control={control}
+							label="Phone number"
+							name="phoneNumber"
+							onlyDigits
+							placeholder="e.g. 09171234567"
+							type="tel"
+						/>
+						<TextField isReadOnly>
+							<Label>Email</Label>
+							<Input
+								value={profile?.email ?? ""}
+								variant="secondary"
+							/>
+							<Description>Contact an administrator to change your email address.</Description>
+						</TextField>
+					</div>
+				</Section>
+
+				<Button
+					isDisabled={!profile}
+					isPending={formState.isSubmitting}
+					type="submit"
+					variant="primary"
+				>
+					Save profile
+				</Button>
+			</form>
+		</Surface>
+	);
+}
+
+function PasswordCard() {
+	const {
+		control,
+		handleSubmit,
+		formState,
+		reset: resetForm,
+	} = useForm<ChangePasswordInput>({
+		resolver: zodResolver(ChangePasswordSchema),
+		mode: "onBlur",
+		reValidateMode: "onChange",
+		defaultValues: { currentPassword: "", newPassword: "", confirmPassword: "" },
+	});
+
+	const save = handleSubmit(async (data) => {
+		try {
+			await changePassword(data.currentPassword, data.newPassword);
+			notify.success({ title: "Password updated", description: "Your password has been changed." });
+			resetForm();
+		} catch (e) {
+			const code = (e as { code?: string })?.code ?? "";
+			notify.danger({
+				title: "Couldn't change password",
+				description:
+					code === "auth/invalid-credential" || code === "auth/wrong-password"
+						? "Your current password is incorrect."
+						: authErrorMessage(e),
+			});
+		}
+	});
+
+	return (
+		<Surface
+			className="rounded-2xl p-6"
+			variant="secondary"
+		>
+			<form
+				className="space-y-6"
+				onSubmit={save}
+			>
+				<Section
+					subtitle="Choose a strong password you don't use anywhere else."
+					title="Password"
+				>
+					<div className="space-y-4">
+						<AppInputGroup
+							control={control}
+							isRequired
+							label="Current password"
+							name="currentPassword"
+							type="password"
+						/>
+						<AppInputGroup
+							control={control}
+							isRequired
+							label="New password"
+							name="newPassword"
+							type="password"
+						/>
+						<AppInputGroup
+							control={control}
+							isRequired
+							label="Confirm new password"
+							name="confirmPassword"
+							type="password"
+						/>
+					</div>
+				</Section>
+
+				<Button
+					isPending={formState.isSubmitting}
+					type="submit"
+					variant="primary"
+				>
+					Update password
+				</Button>
+			</form>
 		</Surface>
 	);
 }

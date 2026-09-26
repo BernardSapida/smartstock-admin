@@ -93,7 +93,7 @@ export function AppTabs({
 
 			{items.map((item) => (
 				<Tabs.Panel
-					className="pt-4"
+					className="pt-4 p-0"
 					id={item.key}
 					key={item.key}
 				>

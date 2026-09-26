@@ -220,15 +220,17 @@ function InventoryPage() {
 								</div>
 
 								<div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-									<AppSearchField
-										onValueChange={(v) => {
-											setSearch(v);
-											setPage(1);
-										}}
-										placeholder="Search products..."
-										value={search}
-									/>
-									<div className="lg:w-56">
+									<div className="flex-1">
+										<AppSearchField
+											onValueChange={(v) => {
+												setSearch(v);
+												setPage(1);
+											}}
+											placeholder="Search products..."
+											value={search}
+										/>
+									</div>
+									<div className="lg:w-56 lg:shrink-0">
 										<Autocomplete
 											onChange={(key) => {
 												setCategory(key ? String(key) : "All");
