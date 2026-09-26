@@ -722,13 +722,15 @@ function UsersTab({ actor, selfUid }: { actor: Actor; selfUid: string }) {
 						</Button>
 					</div>
 				) : (
-					<Button
-						onPress={() => setEditing(u)}
-						size="sm"
-						variant="ghost"
-					>
-						Manage
-					</Button>
+					<div className="flex justify-end">
+						<Button
+							onPress={() => setEditing(u)}
+							size="sm"
+							variant="outline"
+						>
+							Manage
+						</Button>
+					</div>
 				),
 		},
 	];
