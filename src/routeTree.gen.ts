@@ -9,56 +9,40 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
-import { Route as SignUpRouteImport } from './routes/sign-up'
-import { Route as SignInRouteImport } from './routes/sign-in'
-import { Route as ChangePasswordRouteImport } from './routes/change-password'
-import { Route as AccountStatusRouteImport } from './routes/account-status'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AccountStatusRouteImport } from './routes/account-status'
+import { Route as ChangePasswordRouteImport } from './routes/change-password'
+import { Route as SignInRouteImport } from './routes/sign-in'
+import { Route as SignUpRouteImport } from './routes/sign-up'
+import { Route as UnauthorizedRouteImport } from './routes/unauthorized'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
-import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
-import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
-import { Route as AuthenticatedAdminRecipesRouteImport } from './routes/_authenticated/admin/recipes'
-import { Route as AuthenticatedAdminProductionRouteImport } from './routes/_authenticated/admin/production'
-import { Route as AuthenticatedAdminNotificationsRouteImport } from './routes/_authenticated/admin/notifications'
-import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
-import { Route as AuthenticatedAdminInspectionsRouteImport } from './routes/_authenticated/admin/inspections'
-import { Route as AuthenticatedAdminForecastRouteImport } from './routes/_authenticated/admin/forecast'
-import { Route as AuthenticatedAdminExpiryRouteImport } from './routes/_authenticated/admin/expiry'
 import { Route as AuthenticatedAdminAuditLogsRouteImport } from './routes/_authenticated/admin/audit-logs'
-import { Route as AuthenticatedAdminRecipesAddRouteImport } from './routes/_authenticated/admin/recipes_.add'
+import { Route as AuthenticatedAdminExpiryRouteImport } from './routes/_authenticated/admin/expiry'
+import { Route as AuthenticatedAdminForecastRouteImport } from './routes/_authenticated/admin/forecast'
+import { Route as AuthenticatedAdminInspectionsRouteImport } from './routes/_authenticated/admin/inspections'
+import { Route as AuthenticatedAdminInventoryRouteImport } from './routes/_authenticated/admin/inventory'
+import { Route as AuthenticatedAdminNotificationsRouteImport } from './routes/_authenticated/admin/notifications'
+import { Route as AuthenticatedAdminProductionRouteImport } from './routes/_authenticated/admin/production'
+import { Route as AuthenticatedAdminRecipesRouteImport } from './routes/_authenticated/admin/recipes'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
 import { Route as AuthenticatedAdminInventoryAddRouteImport } from './routes/_authenticated/admin/inventory_.add'
-import { Route as AuthenticatedAdminRecipesRecipeIdEditRouteImport } from './routes/_authenticated/admin/recipes_.$recipeId.edit'
+import { Route as AuthenticatedAdminRecipesAddRouteImport } from './routes/_authenticated/admin/recipes_.add'
 import { Route as AuthenticatedAdminInventoryProductIdEditRouteImport } from './routes/_authenticated/admin/inventory_.$productId.edit'
+import { Route as AuthenticatedAdminRecipesRecipeIdEditRouteImport } from './routes/_authenticated/admin/recipes_.$recipeId.edit'
 
-const UnauthorizedRoute = UnauthorizedRouteImport.update({
-  id: '/unauthorized',
-  path: '/unauthorized',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SignUpRoute = SignUpRouteImport.update({
-  id: '/sign-up',
-  path: '/sign-up',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ChangePasswordRoute = ChangePasswordRouteImport.update({
-  id: '/change-password',
-  path: '/change-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountStatusRoute = AccountStatusRouteImport.update({
-  id: '/account-status',
-  path: '/account-status',
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -66,18 +50,34 @@ const AboutRoute = AboutRouteImport.update({
   path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRoute = AuthenticatedRouteImport.update({
-  id: '/_authenticated',
+const AccountStatusRoute = AccountStatusRouteImport.update({
+  id: '/account-status',
+  path: '/account-status',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ChangePasswordRoute = ChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const UnauthorizedRoute = UnauthorizedRouteImport.update({
+  id: '/unauthorized',
+  path: '/unauthorized',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
@@ -85,9 +85,9 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
-const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
@@ -95,52 +95,10 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
-const AuthenticatedAdminSettingsRoute =
-  AuthenticatedAdminSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminReportsRoute =
-  AuthenticatedAdminReportsRouteImport.update({
-    id: '/reports',
-    path: '/reports',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminRecipesRoute =
-  AuthenticatedAdminRecipesRouteImport.update({
-    id: '/recipes',
-    path: '/recipes',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminProductionRoute =
-  AuthenticatedAdminProductionRouteImport.update({
-    id: '/production',
-    path: '/production',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminNotificationsRoute =
-  AuthenticatedAdminNotificationsRouteImport.update({
-    id: '/notifications',
-    path: '/notifications',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminInventoryRoute =
-  AuthenticatedAdminInventoryRouteImport.update({
-    id: '/inventory',
-    path: '/inventory',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminInspectionsRoute =
-  AuthenticatedAdminInspectionsRouteImport.update({
-    id: '/inspections',
-    path: '/inspections',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminForecastRoute =
-  AuthenticatedAdminForecastRouteImport.update({
-    id: '/forecast',
-    path: '/forecast',
+const AuthenticatedAdminAuditLogsRoute =
+  AuthenticatedAdminAuditLogsRouteImport.update({
+    id: '/audit-logs',
+    path: '/audit-logs',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminExpiryRoute =
@@ -149,16 +107,52 @@ const AuthenticatedAdminExpiryRoute =
     path: '/expiry',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminAuditLogsRoute =
-  AuthenticatedAdminAuditLogsRouteImport.update({
-    id: '/audit-logs',
-    path: '/audit-logs',
+const AuthenticatedAdminForecastRoute =
+  AuthenticatedAdminForecastRouteImport.update({
+    id: '/forecast',
+    path: '/forecast',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminRecipesAddRoute =
-  AuthenticatedAdminRecipesAddRouteImport.update({
-    id: '/recipes_/add',
-    path: '/recipes/add',
+const AuthenticatedAdminInspectionsRoute =
+  AuthenticatedAdminInspectionsRouteImport.update({
+    id: '/inspections',
+    path: '/inspections',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminInventoryRoute =
+  AuthenticatedAdminInventoryRouteImport.update({
+    id: '/inventory',
+    path: '/inventory',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminNotificationsRoute =
+  AuthenticatedAdminNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminProductionRoute =
+  AuthenticatedAdminProductionRouteImport.update({
+    id: '/production',
+    path: '/production',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRecipesRoute =
+  AuthenticatedAdminRecipesRouteImport.update({
+    id: '/recipes',
+    path: '/recipes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminInventoryAddRoute =
@@ -167,16 +161,22 @@ const AuthenticatedAdminInventoryAddRoute =
     path: '/inventory/add',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminRecipesRecipeIdEditRoute =
-  AuthenticatedAdminRecipesRecipeIdEditRouteImport.update({
-    id: '/recipes_/$recipeId/edit',
-    path: '/recipes/$recipeId/edit',
+const AuthenticatedAdminRecipesAddRoute =
+  AuthenticatedAdminRecipesAddRouteImport.update({
+    id: '/recipes_/add',
+    path: '/recipes/add',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminInventoryProductIdEditRoute =
   AuthenticatedAdminInventoryProductIdEditRouteImport.update({
     id: '/inventory_/$productId/edit',
     path: '/inventory/$productId/edit',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminRecipesRecipeIdEditRoute =
+  AuthenticatedAdminRecipesRecipeIdEditRouteImport.update({
+    id: '/recipes_/$recipeId/edit',
+    path: '/recipes/$recipeId/edit',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 
@@ -359,46 +359,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/unauthorized': {
-      id: '/unauthorized'
-      path: '/unauthorized'
-      fullPath: '/unauthorized'
-      preLoaderRoute: typeof UnauthorizedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sign-up': {
-      id: '/sign-up'
-      path: '/sign-up'
-      fullPath: '/sign-up'
-      preLoaderRoute: typeof SignUpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/change-password': {
-      id: '/change-password'
-      path: '/change-password'
-      fullPath: '/change-password'
-      preLoaderRoute: typeof ChangePasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account-status': {
-      id: '/account-status'
-      path: '/account-status'
-      fullPath: '/account-status'
-      preLoaderRoute: typeof AccountStatusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -408,18 +373,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/profile': {
-      id: '/_authenticated/profile'
-      path: '/profile'
-      fullPath: '/profile'
-      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+    '/account-status': {
+      id: '/account-status'
+      path: '/account-status'
+      fullPath: '/account-status'
+      preLoaderRoute: typeof AccountStatusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/change-password': {
+      id: '/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof ChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sign-up': {
+      id: '/sign-up'
+      path: '/sign-up'
+      fullPath: '/sign-up'
+      preLoaderRoute: typeof SignUpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/unauthorized': {
+      id: '/unauthorized'
+      path: '/unauthorized'
+      fullPath: '/unauthorized'
+      preLoaderRoute: typeof UnauthorizedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/dashboard': {
@@ -429,11 +429,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
-    '/_authenticated/admin': {
-      id: '/_authenticated/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/admin/': {
@@ -443,60 +443,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/settings': {
-      id: '/_authenticated/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/reports': {
-      id: '/_authenticated/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/recipes': {
-      id: '/_authenticated/admin/recipes'
-      path: '/recipes'
-      fullPath: '/admin/recipes'
-      preLoaderRoute: typeof AuthenticatedAdminRecipesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/production': {
-      id: '/_authenticated/admin/production'
-      path: '/production'
-      fullPath: '/admin/production'
-      preLoaderRoute: typeof AuthenticatedAdminProductionRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/notifications': {
-      id: '/_authenticated/admin/notifications'
-      path: '/notifications'
-      fullPath: '/admin/notifications'
-      preLoaderRoute: typeof AuthenticatedAdminNotificationsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/inventory': {
-      id: '/_authenticated/admin/inventory'
-      path: '/inventory'
-      fullPath: '/admin/inventory'
-      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/inspections': {
-      id: '/_authenticated/admin/inspections'
-      path: '/inspections'
-      fullPath: '/admin/inspections'
-      preLoaderRoute: typeof AuthenticatedAdminInspectionsRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/forecast': {
-      id: '/_authenticated/admin/forecast'
-      path: '/forecast'
-      fullPath: '/admin/forecast'
-      preLoaderRoute: typeof AuthenticatedAdminForecastRouteImport
+    '/_authenticated/admin/audit-logs': {
+      id: '/_authenticated/admin/audit-logs'
+      path: '/audit-logs'
+      fullPath: '/admin/audit-logs'
+      preLoaderRoute: typeof AuthenticatedAdminAuditLogsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/expiry': {
@@ -506,18 +457,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminExpiryRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/audit-logs': {
-      id: '/_authenticated/admin/audit-logs'
-      path: '/audit-logs'
-      fullPath: '/admin/audit-logs'
-      preLoaderRoute: typeof AuthenticatedAdminAuditLogsRouteImport
+    '/_authenticated/admin/forecast': {
+      id: '/_authenticated/admin/forecast'
+      path: '/forecast'
+      fullPath: '/admin/forecast'
+      preLoaderRoute: typeof AuthenticatedAdminForecastRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/recipes_/add': {
-      id: '/_authenticated/admin/recipes_/add'
-      path: '/recipes/add'
-      fullPath: '/admin/recipes/add'
-      preLoaderRoute: typeof AuthenticatedAdminRecipesAddRouteImport
+    '/_authenticated/admin/inspections': {
+      id: '/_authenticated/admin/inspections'
+      path: '/inspections'
+      fullPath: '/admin/inspections'
+      preLoaderRoute: typeof AuthenticatedAdminInspectionsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/inventory': {
+      id: '/_authenticated/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AuthenticatedAdminInventoryRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/notifications': {
+      id: '/_authenticated/admin/notifications'
+      path: '/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AuthenticatedAdminNotificationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/production': {
+      id: '/_authenticated/admin/production'
+      path: '/production'
+      fullPath: '/admin/production'
+      preLoaderRoute: typeof AuthenticatedAdminProductionRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/recipes': {
+      id: '/_authenticated/admin/recipes'
+      path: '/recipes'
+      fullPath: '/admin/recipes'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/inventory_/add': {
@@ -527,11 +520,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminInventoryAddRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/recipes_/$recipeId/edit': {
-      id: '/_authenticated/admin/recipes_/$recipeId/edit'
-      path: '/recipes/$recipeId/edit'
-      fullPath: '/admin/recipes/$recipeId/edit'
-      preLoaderRoute: typeof AuthenticatedAdminRecipesRecipeIdEditRouteImport
+    '/_authenticated/admin/recipes_/add': {
+      id: '/_authenticated/admin/recipes_/add'
+      path: '/recipes/add'
+      fullPath: '/admin/recipes/add'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesAddRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/inventory_/$productId/edit': {
@@ -539,6 +532,13 @@ declare module '@tanstack/react-router' {
       path: '/inventory/$productId/edit'
       fullPath: '/admin/inventory/$productId/edit'
       preLoaderRoute: typeof AuthenticatedAdminInventoryProductIdEditRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/recipes_/$recipeId/edit': {
+      id: '/_authenticated/admin/recipes_/$recipeId/edit'
+      path: '/recipes/$recipeId/edit'
+      fullPath: '/admin/recipes/$recipeId/edit'
+      preLoaderRoute: typeof AuthenticatedAdminRecipesRecipeIdEditRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
   }

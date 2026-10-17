@@ -134,7 +134,7 @@ export const redirectSignedInUserFn = createServerFn().handler(async () => {
  * Assert user has required role - main auth guard for protected routes
  */
 export const assertAuthenticatedRoleFn = createServerFn()
-	.inputValidator(allowedRolesSchema)
+	.validator(allowedRolesSchema)
 	.handler(async ({ data }) => {
 		const token = getAccessToken();
 
@@ -236,7 +236,7 @@ export const refreshTokenFn = createServerFn().handler(async () => {
  * Check if user has required role (non-throwing version for conditional UI)
  */
 export const checkUserRoleFn = createServerFn()
-	.inputValidator(allowedRolesSchema)
+	.validator(allowedRolesSchema)
 	.handler(async ({ data }) => {
 		const token = getAccessToken();
 
